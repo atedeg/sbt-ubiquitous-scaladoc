@@ -1,10 +1,12 @@
 ThisBuild / scalafixDependencies ++= Seq(
-  "com.github.liancheng" %% "organize-imports" % "0.6.0",
+    "com.github.liancheng" %% "organize-imports" % "0.6.0",
 )
 
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+
+resolvers += "jitpack" at "https://jitpack.io"
 
 lazy val root = project
   .in(file("."))
@@ -17,5 +19,9 @@ lazy val root = project
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     scalacOptions += "-Ywarn-unused-import",
-    libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "2.2.1",
+    libraryDependencies ++= Seq(
+        "net.ruippeixotog" %% "scala-scraper" % "2.2.1",
+        "com.github.Steppschuh" %% "Java-Markdown-Generator" % "1.3.2",
+        "com.github.pathikrit" %% "better-files" % "3.9.1",
+    ),
   )
