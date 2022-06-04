@@ -8,6 +8,10 @@ ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT")
 
 resolvers += "jitpack" at "https://jitpack.io"
 
+lazy val startupTransition: State => State = { s: State =>
+  "conventionalCommits" :: s
+}
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(SbtPlugin)
@@ -24,4 +28,8 @@ lazy val root = project
         "com.github.Steppschuh" %% "Java-Markdown-Generator" % "1.3.2",
         "com.github.pathikrit" %% "better-files" % "3.9.1",
     ),
+    Global / onLoad := {
+      val old = (Global / onLoad).value
+      startupTransition compose old
+    },
   )
