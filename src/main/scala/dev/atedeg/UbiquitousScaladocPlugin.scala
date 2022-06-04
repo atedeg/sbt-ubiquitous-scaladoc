@@ -10,8 +10,11 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override def projectSettings: Seq[Setting[_]] = Seq(
-    ubiquitousScaladoc := UbiquitousScaladoc(usSourceHtmlDir.value, usTargetMarkdownDir.value)
+  override lazy val buildSettings: Seq[Setting[_]] = Seq(
+    ubiquitousScaladoc := UbiquitousScaladoc(
+      (ubiquitousScaladoc / usSourceHtmlDir).value,
+      (ubiquitousScaladoc / usTargetMarkdownDir).value,
+    ),
   )
 
 }
