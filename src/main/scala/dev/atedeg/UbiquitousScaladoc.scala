@@ -13,39 +13,40 @@ import java.io.{ File => JFile }
 
 object UbiquitousScaladoc {
   private val tableFirstRow: (String, String) = ("Term", "Definition")
-  private val fileSuffix: String = "UbiquitousLanguage.md"
+  private val fileNameSuffix: String = "UbiquitousLanguage.md"
 
   def apply(sourceDir: JFile, targetDir: JFile): Unit = ubiquitousScaladocTask(sourceDir, targetDir)
 
   private def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = {
-    extractFilesWithDirName(sourceDir.toScala).foreach { s =>
+    extractFilesWithDirName(sourceDir.toScala) foreach { s =>
       {
         val tableBuilder = generateMarkdownTable()
-        val dirName = s._1
-        val files = s._2
+        val (dirName, files) = s
         val lines = extractTextFromHtml(files)
-        lines.foreach { l =>
-          tableBuilder addRow (l._1, l._2)
-        }
+        lines.collect { case Some((t, d)) => tableBuilder addRow (t, d) }
         generateMarkdownFile(dirName, tableBuilder, targetDir.toScala)
       }
     }
   }
 
-  private def extractFilesWithDirName(file: File): Seq[(String, Seq[File])] = {
-    file match {
-      case f if f.isDirectory =>
-        ls(file).collect {
-          case f if f.isDirectory => (f.name, ls(f).toSeq)
-        }.toSeq
-      case f => Seq((f.name, Seq(f)))
-    }
+  private def extractFilesWithDirName(file: File): Seq[(String, Seq[File])] = file match {
+    case f if f.isDirectory =>
+      ls(file).collect {
+        case f if f.isDirectory => (f.name, ls(f).toSeq)
+        case s => ("", Seq(s))
+      }.toSeq
+    case f => Seq((f.name, Seq(f)))
   }
 
-  private def extractTextFromHtml(files: Seq[File]): Seq[(String, String)] = {
+  private def extractTextFromHtml(files: Seq[File]): Seq[Option[(String, String)]] = {
     files.map { f =>
-      val doc = JsoupBrowser().parseFile(f.toJava)
-      (doc >> text("title"), doc >> text("div.doc > p"))
+      val document = JsoupBrowser().parseFile(f.toJava)
+      val title: Option[String] = document >?> text("title")
+      val doc: Option[String] = document >?> text("div.doc > p")
+      (title, doc) match {
+        case (Some(t), Some(d)) => Some(t, d)
+        case _ => None
+      }
     }
   }
 
@@ -55,9 +56,9 @@ object UbiquitousScaladoc {
       .addRow(tableFirstRow._1, tableFirstRow._2)
   }
 
-  private def generateMarkdownFile(filePrefix: String, tableBuilder: Table.Builder, targetDir: File) = {
+  private def generateMarkdownFile(fileNamePrefix: String, tableBuilder: Table.Builder, targetDir: File): Unit = {
     val table = tableBuilder.build()
-    val file = File(s"${targetDir}${filePrefix}${fileSuffix}")
+    val file: File = targetDir / s"${fileNamePrefix}${fileNameSuffix}"
     file < table.serialize()
   }
 }
