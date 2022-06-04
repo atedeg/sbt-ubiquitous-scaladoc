@@ -12,7 +12,7 @@ import net.steppschuh.markdowngenerator.table.Table
 import java.io.{ File => JFile }
 
 object UbiquitousScaladoc {
-  private val tableFirstRow: (String, String) = ("Term", "Definition")
+  private val tableHeaders: Seq[String] = Seq("Term", "Definition")
   private val fileNameSuffix: String = "UbiquitousLanguage.md"
 
   def apply(sourceDir: JFile, targetDir: JFile): Unit = ubiquitousScaladocTask(sourceDir, targetDir)
@@ -53,12 +53,11 @@ object UbiquitousScaladoc {
   private def generateMarkdownTable(): Table.Builder = {
     new Table.Builder()
       .withAlignment(Table.ALIGN_LEFT)
-      .addRow(tableFirstRow._1, tableFirstRow._2)
+      .addRow(tableHeaders*)
   }
 
   private def generateMarkdownFile(fileNamePrefix: String, tableBuilder: Table.Builder, targetDir: File): Unit = {
-    val table = tableBuilder.build()
     val file: File = targetDir / s"${fileNamePrefix}${fileNameSuffix}"
-    file < table.serialize()
+    file < tableBuilder.build.serialize
   }
 }
