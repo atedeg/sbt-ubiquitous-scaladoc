@@ -1,5 +1,5 @@
 ThisBuild / scalafixDependencies ++= Seq(
-    "com.github.liancheng" %% "organize-imports" % "0.6.0",
+  "com.github.liancheng" %% "organize-imports" % "0.6.0",
 )
 
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
@@ -16,17 +16,21 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    version := "0.1.0",
+    version := "0.1.0-SNAPSHOT",
     name := "sbt-ubiquitous-scaladoc",
     sbtPlugin := true,
+    scriptedLaunchOpts := {
+      scriptedLaunchOpts.value ++
+        Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    },
     scriptedBufferLog := false,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     scalacOptions += "-Ywarn-unused-import",
     libraryDependencies ++= Seq(
-        "net.ruippeixotog" %% "scala-scraper" % "2.2.1",
-        "com.github.Steppschuh" %% "Java-Markdown-Generator" % "1.3.2",
-        "com.github.pathikrit" %% "better-files" % "3.9.1",
+      "net.ruippeixotog" %% "scala-scraper" % "2.2.1",
+      "com.github.Steppschuh" %% "Java-Markdown-Generator" % "1.3.2",
+      "com.github.pathikrit" %% "better-files" % "3.9.1",
     ),
     Global / onLoad := {
       val old = (Global / onLoad).value
