@@ -16,54 +16,56 @@ object UbiquitousScaladoc {
   private val fileNameSuffix: String = "UbiquitousLanguage.md"
   private val regEx = "[A-Z].*\\.html"
 
-  def apply(sourceDir: JFile, targetDir: JFile): Unit = ubiquitousScaladocTask(sourceDir, targetDir)
+  def apply(sourceDir: JFile, targetDir: JFile): Unit = Internals.ubiquitousScaladocTask(sourceDir, targetDir)
 
-  private def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
-    file <- ls(sourceDir.toScala)
-    tableBuilder <- generateMarkdownTable()
-    (dirName, files) <- extractFilesWithDirName(file)
-  } generateMarkdownFile(dirName, files, tableBuilder, targetDir.toScala)
+  private object Internals {
 
-  private def extractFilesWithDirName(file: File): Option[(String, Seq[File])] = file match {
-    case f if f.isDirectory => Some((f.name, extractFilesFromAFolder(f)))
-    case f if isAScaladocClassFile(f) => Some(("", Seq(f)))
-    case _ => None
+    def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
+      file <- ls(sourceDir.toScala)
+      tableBuilder <- generateMarkdownTable()
+      (dirName, files) <- extractFilesWithDirName(file)
+    } generateMarkdownFile(dirName, files, tableBuilder, targetDir.toScala)
+
+    def extractFilesWithDirName(file: File): Option[(String, Seq[File])] = file match {
+      case f if f.isDirectory => Some((f.name, extractFilesFromAFolder(f)))
+      case f if isAScaladocClassFile(f) => Some(("", Seq(f)))
+      case _ => None
+    }
+
+    def extractFilesFromAFolder(file: File): Seq[File] = {
+      ls(file).collect { case f if isAScaladocClassFile(f) => f }.toSeq
+    }
+
+    def isAScaladocClassFile(file: File): Boolean = file.name matches regEx
+
+    def extractTextFromHtml(files: Seq[File]): Seq[(String, String)] = for {
+      f <- files
+      title <- JsoupBrowser().parseFile(f.toJava) >?> text("title")
+      doc <- JsoupBrowser().parseFile(f.toJava) >?> text("div.doc > p")
+    } yield (title, doc)
+
+    def generateMarkdownTable(): Option[Table.Builder] = {
+      Some(
+        new Table.Builder()
+          .withAlignment(Table.ALIGN_LEFT)
+          .addRow(tableHeaders *),
+      )
+    }
+
+    def generateMarkdownFile(
+        fileNamePrefix: String,
+        files: Seq[File],
+        tableBuilder: Table.Builder,
+        targetDir: File,
+    ): Unit = {
+      addRowsToMarkDownTable(files, tableBuilder)
+      val file: File = File(s"${targetDir}\\${fileNamePrefix}${fileNameSuffix}")
+      file < tableBuilder.build.serialize
+    }
+
+    def addRowsToMarkDownTable(files: Seq[File], tableBuilder: Table.Builder): Unit = {
+      val lines: Seq[(String, String)] = extractTextFromHtml(files)
+      lines foreach { l => tableBuilder addRow (l._1, l._2) }
+    }
   }
-
-  private def extractFilesFromAFolder(file: File): Seq[File] = {
-    ls(file).collect { case f if isAScaladocClassFile(f) => f }.toSeq
-  }
-
-  private def isAScaladocClassFile(file: File): Boolean = file.name matches regEx
-
-  private def extractTextFromHtml(files: Seq[File]): Seq[(String, String)] = for {
-    f <- files
-    title <- JsoupBrowser().parseFile(f.toJava) >?> text("title")
-    doc <- JsoupBrowser().parseFile(f.toJava) >?> text("div.doc > p")
-  } yield (title, doc)
-
-  private def generateMarkdownTable(): Option[Table.Builder] = {
-    Some(
-      new Table.Builder()
-        .withAlignment(Table.ALIGN_LEFT)
-        .addRow(tableHeaders *),
-    )
-  }
-
-  private def generateMarkdownFile(
-      fileNamePrefix: String,
-      files: Seq[File],
-      tableBuilder: Table.Builder,
-      targetDir: File,
-  ): Unit = {
-    addRowsToMarkDownTable(files, tableBuilder)
-    val file: File = File(s"${targetDir}\\${fileNamePrefix}${fileNameSuffix}")
-    file < tableBuilder.build.serialize
-  }
-
-  private def addRowsToMarkDownTable(files: Seq[File], tableBuilder: Table.Builder): Unit = {
-    val lines: Seq[(String, String)] = extractTextFromHtml(files)
-    lines foreach { l => tableBuilder addRow (l._1, l._2) }
-  }
-
 }
