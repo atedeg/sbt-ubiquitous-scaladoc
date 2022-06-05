@@ -1,6 +1,5 @@
-# check if the markdown file gets created in the custom folder, without folder name
-> set scriptedBufferLog := false
+# check if the markdown file gets created in the target folder
 > doc
 $ mkdir customTarget
 > ubiquitousScaladoc
-$ exists customTarget/UbiquitousLanguage.md
+$ exists customTarget/generatedUbiquitousLanguage.md
