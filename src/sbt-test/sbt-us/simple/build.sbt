@@ -3,5 +3,5 @@ ThisBuild / ubiquitousScaladoc / usTargetMarkdownDir := file("customTarget")
 
 lazy val root = (project in file("."))
   .settings(
-    Compile / doc / target := baseDirectory.value / "api"
+    Compile / doc / target := baseDirectory.value / "api/generated"
   )
