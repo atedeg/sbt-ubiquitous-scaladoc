@@ -24,44 +24,38 @@ object UbiquitousScaladoc {
     final case class Concept(name: String, description: String)
 
     def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
-      file <- ls(sourceDir.toScala)
-      (dirName, files) <- extractFilesWithDirName(file)
-    } generateMarkdownFile(dirName, files, targetDir.toScala)
+      dir <- directoryFromSource(sourceDir.toScala)
+      concepts = conceptFromFiles(dir)
+    } generateMarkdownFile(dir.name, concepts, targetDir.toScala)
 
-    def extractFilesWithDirName(file: File): Option[(String, Seq[File])] = file match {
-      case f if f.isDirectory => Some((f.name, extractFilesFromAFolder(f)))
-      case f if isAScaladocClassFile(f) => Some(("", Seq(f)))
-      case _ => None
+    def directoryFromSource(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
+
+    def conceptFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap extractTextFromHtml
+
+    def scaladocFilesFromDir(dir: File): Iterator[File] = ls(dir) filter isScaladocClassFile
+
+    def isScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
+
+    def extractTextFromHtml(file: File): Option[Concept] = {
+      val document = JsoupBrowser() parseFile file.toJava
+      for {
+        title <- document >?> text("title")
+        doc <- document >?> text("div.doc > p")
+      } yield Concept(title, doc)
     }
 
-    def extractFilesFromAFolder(file: File): Seq[File] = {
-      ls(file).collect { case f if isAScaladocClassFile(f) => f }.toSeq
-    }
+    def tableBuilder: Builder = new Builder() withAlignment Table.ALIGN_LEFT addRow(tableHeaders *)
 
-    def isAScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
-
-    def extractTextFromHtml(files: Seq[File]): Seq[Concept] = for {
-      f <- files
-      name <- JsoupBrowser().parseFile(f.toJava) >?> text("title")
-      description <- JsoupBrowser().parseFile(f.toJava) >?> text("div.doc > p")
-    } yield Concept(name, description)
-
-    private def tableBuilder: Builder = new Builder() withAlignment Table.ALIGN_LEFT addRow(tableHeaders *)
-
-    def generateMarkdownFile(
-        dirName: String,
-        files: Seq[File],
-        targetDir: File,
-    ): Unit = {
-      val builder = tableBuilder
-      addRowsToMarkDownTable(files, builder)
+    def generateMarkdownFile(dirName: String, concepts: Iterator[Concept], targetDir: File): Unit = {
+      val table = addConceptsToTable(concepts)
       val file: File = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
-      file < builder.build.serialize
+      file < table.serialize
     }
 
-    def addRowsToMarkDownTable(files: Seq[File], tableBuilder: Builder): Unit = {
-      val lines: Seq[Concept] = extractTextFromHtml(files)
-      lines foreach { l => tableBuilder addRow (l.name, l.description) }
+    def addConceptsToTable(concepts: Iterator[Concept]): Table = {
+      val builder = tableBuilder
+      for { Concept(name, description) <- concepts } builder.addRow(name, description)
+      builder.build()
     }
   }
 }
