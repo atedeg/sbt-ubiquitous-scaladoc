@@ -8,6 +8,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL.deepFunctorOps
 import net.ruippeixotog.scalascraper.dsl.DSL.*
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract.text
 import net.steppschuh.markdowngenerator.table.Table
+import net.steppschuh.markdowngenerator.table.Table.Builder
 
 import java.io.{ File => JFile }
 
@@ -20,6 +21,7 @@ object UbiquitousScaladoc {
   def apply(sourceDir: JFile, targetDir: JFile): Unit = Internals.ubiquitousScaladocTask(sourceDir, targetDir)
 
   private object Internals {
+    final case class Concept(name: String, description: String)
 
     def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
       file <- ls(sourceDir.toScala)
@@ -39,15 +41,15 @@ object UbiquitousScaladoc {
 
     def isAScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
 
-    def extractTextFromHtml(files: Seq[File]): Seq[(String, String)] = for {
+    def extractTextFromHtml(files: Seq[File]): Seq[Concept] = for {
       f <- files
-      title <- JsoupBrowser().parseFile(f.toJava) >?> text("title")
-      doc <- JsoupBrowser().parseFile(f.toJava) >?> text("div.doc > p")
-    } yield (title, doc)
+      name <- JsoupBrowser().parseFile(f.toJava) >?> text("title")
+      description <- JsoupBrowser().parseFile(f.toJava) >?> text("div.doc > p")
+    } yield Concept(name, description)
 
-    def generateMarkdownTable(): Option[Table.Builder] = {
+    def generateMarkdownTable(): Option[Builder] = {
       Some(
-        new Table.Builder()
+        new Builder()
           .withAlignment(Table.ALIGN_LEFT)
           .addRow(tableHeaders *),
       )
@@ -56,7 +58,7 @@ object UbiquitousScaladoc {
     def generateMarkdownFile(
         dirName: String,
         files: Seq[File],
-        tableBuilder: Table.Builder,
+        tableBuilder: Builder,
         targetDir: File,
     ): Unit = {
       addRowsToMarkDownTable(files, tableBuilder)
@@ -64,9 +66,9 @@ object UbiquitousScaladoc {
       file < tableBuilder.build.serialize
     }
 
-    def addRowsToMarkDownTable(files: Seq[File], tableBuilder: Table.Builder): Unit = {
-      val lines: Seq[(String, String)] = extractTextFromHtml(files)
-      lines foreach { l => tableBuilder addRow (l._1, l._2) }
+    def addRowsToMarkDownTable(files: Seq[File], tableBuilder: Builder): Unit = {
+      val lines: Seq[Concept] = extractTextFromHtml(files)
+      lines foreach { l => tableBuilder addRow (l.name, l.description) }
     }
   }
 }
