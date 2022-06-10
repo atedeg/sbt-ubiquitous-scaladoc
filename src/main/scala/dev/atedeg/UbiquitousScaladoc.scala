@@ -25,9 +25,8 @@ object UbiquitousScaladoc {
 
     def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
       file <- ls(sourceDir.toScala)
-      tableBuilder <- generateMarkdownTable()
       (dirName, files) <- extractFilesWithDirName(file)
-    } generateMarkdownFile(dirName, files, tableBuilder, targetDir.toScala)
+    } generateMarkdownFile(dirName, files, targetDir.toScala)
 
     def extractFilesWithDirName(file: File): Option[(String, Seq[File])] = file match {
       case f if f.isDirectory => Some((f.name, extractFilesFromAFolder(f)))
@@ -47,23 +46,17 @@ object UbiquitousScaladoc {
       description <- JsoupBrowser().parseFile(f.toJava) >?> text("div.doc > p")
     } yield Concept(name, description)
 
-    def generateMarkdownTable(): Option[Builder] = {
-      Some(
-        new Builder()
-          .withAlignment(Table.ALIGN_LEFT)
-          .addRow(tableHeaders *),
-      )
-    }
+    private def tableBuilder: Builder = new Builder() withAlignment Table.ALIGN_LEFT addRow(tableHeaders *)
 
     def generateMarkdownFile(
         dirName: String,
         files: Seq[File],
-        tableBuilder: Builder,
         targetDir: File,
     ): Unit = {
-      addRowsToMarkDownTable(files, tableBuilder)
+      val builder = tableBuilder
+      addRowsToMarkDownTable(files, builder)
       val file: File = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
-      file < tableBuilder.build.serialize
+      file < builder.build.serialize
     }
 
     def addRowsToMarkDownTable(files: Seq[File], tableBuilder: Builder): Unit = {
