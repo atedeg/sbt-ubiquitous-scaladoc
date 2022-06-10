@@ -13,8 +13,9 @@ import java.io.{ File => JFile }
 
 object UbiquitousScaladoc {
   private val tableHeaders: Seq[String] = Seq("Term", "Definition")
-  private val fileNameSuffix: String = "UbiquitousLanguage.md"
-  private val regEx = "[A-Z].*\\.html"
+  private val fileNameSuffix: String = "UbiquitousLanguage"
+  private val fileNameExtension: String = ".md"
+  private val scaladocFileNameRegex = "[A-Z].*\\.html"
 
   def apply(sourceDir: JFile, targetDir: JFile): Unit = Internals.ubiquitousScaladocTask(sourceDir, targetDir)
 
@@ -36,7 +37,7 @@ object UbiquitousScaladoc {
       ls(file).collect { case f if isAScaladocClassFile(f) => f }.toSeq
     }
 
-    def isAScaladocClassFile(file: File): Boolean = file.name matches regEx
+    def isAScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
 
     def extractTextFromHtml(files: Seq[File]): Seq[(String, String)] = for {
       f <- files
@@ -53,13 +54,13 @@ object UbiquitousScaladoc {
     }
 
     def generateMarkdownFile(
-        fileNamePrefix: String,
+        dirName: String,
         files: Seq[File],
         tableBuilder: Table.Builder,
         targetDir: File,
     ): Unit = {
       addRowsToMarkDownTable(files, tableBuilder)
-      val file: File = File(s"${targetDir}\\${fileNamePrefix}${fileNameSuffix}")
+      val file: File = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
       file < tableBuilder.build.serialize
     }
 
