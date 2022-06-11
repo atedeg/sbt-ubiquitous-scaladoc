@@ -1,19 +1,20 @@
 package dev.atedeg
 
+import java.io.{ File => JFile }
+
 import better.files.Dsl.{ ls, SymbolicOperations }
-import better.files.FileExtensions
 import better.files.File
+import better.files.FileExtensions
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
-import net.ruippeixotog.scalascraper.dsl.DSL.deepFunctorOps
-import net.ruippeixotog.scalascraper.dsl.DSL.*
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract.text
+import net.ruippeixotog.scalascraper.dsl.DSL.*
+import net.ruippeixotog.scalascraper.dsl.DSL.deepFunctorOps
 import net.steppschuh.markdowngenerator.table.Table
 import net.steppschuh.markdowngenerator.table.Table.Builder
 
-import java.io.{ File => JFile }
-
 object UbiquitousScaladoc {
   private val tableHeaders: Seq[String] = Seq("Term", "Definition")
+  private val htmlTags: Option[(String, String)] = Some("title", "div.doc > p")
   private val fileNameSuffix: String = "UbiquitousLanguage"
   private val fileNameExtension: String = ".md"
   private val scaladocFileNameRegex = "[A-Z].*\\.html"
@@ -25,12 +26,12 @@ object UbiquitousScaladoc {
 
     def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
       dir <- directoryFromSource(sourceDir.toScala)
-      concepts = conceptFromFiles(dir)
+      concepts = conceptsFromFiles(dir)
     } generateMarkdownFile(dir.name, concepts, targetDir.toScala)
 
     def directoryFromSource(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
 
-    def conceptFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap extractTextFromHtml
+    def conceptsFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap extractTextFromHtml
 
     def scaladocFilesFromDir(dir: File): Iterator[File] = ls(dir) filter isScaladocClassFile
 
@@ -39,12 +40,13 @@ object UbiquitousScaladoc {
     def extractTextFromHtml(file: File): Option[Concept] = {
       val document = JsoupBrowser() parseFile file.toJava
       for {
-        title <- document >?> text("title")
-        doc <- document >?> text("div.doc > p")
-      } yield Concept(title, doc)
+        (t1, t2) <- htmlTags
+        name <- document >?> text(t1)
+        description <- document >?> text(t2)
+      } yield Concept(name, description)
     }
 
-    def tableBuilder: Builder = new Builder() withAlignment Table.ALIGN_LEFT addRow(tableHeaders *)
+    def tableBuilder: Builder = new Builder() withAlignment Table.ALIGN_LEFT addRow (tableHeaders *)
 
     def generateMarkdownFile(dirName: String, concepts: Iterator[Concept], targetDir: File): Unit = {
       val table = addConceptsToTable(concepts)
@@ -53,7 +55,7 @@ object UbiquitousScaladoc {
     }
 
     def addConceptsToTable(concepts: Iterator[Concept]): Table = {
-      val builder = tableBuilder
+      val builder: Builder = tableBuilder
       for { Concept(name, description) <- concepts } builder.addRow(name, description)
       builder.build()
     }
