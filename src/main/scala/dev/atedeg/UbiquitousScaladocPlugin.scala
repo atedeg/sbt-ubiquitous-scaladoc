@@ -12,8 +12,8 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
     ubiquitousScaladoc := UbiquitousScaladoc(
-      (ubiquitousScaladoc / usSourceHtmlDir).value,
-      (ubiquitousScaladoc / usTargetMarkdownDir).value,
+      (ubiquitousScaladoc / sourceHtmlDir).value,
+      (ubiquitousScaladoc / targetMarkdownDir).value,
     ),
   )
 

@@ -7,7 +7,7 @@ import better.files.File
 import better.files.FileExtensions
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract.text
-import net.ruippeixotog.scalascraper.dsl.DSL.*
+import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.deepFunctorOps
 import net.steppschuh.markdowngenerator.table.Table
 import net.steppschuh.markdowngenerator.table.Table.Builder
