@@ -25,19 +25,19 @@ object UbiquitousScaladoc {
     final case class Concept(name: String, description: String)
 
     def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
-      dir <- directoryFromSource(sourceDir.toScala)
+      dir <- directoriesFromDir(sourceDir.toScala)
       concepts = conceptsFromFiles(dir)
     } generateMarkdownFile(dir.name, concepts, targetDir.toScala)
 
-    def directoryFromSource(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
+    def directoriesFromDir(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
 
-    def conceptsFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap extractTextFromHtml
+    def conceptsFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap extractConceptFromFile
 
     def scaladocFilesFromDir(dir: File): Iterator[File] = ls(dir) filter isScaladocClassFile
 
     def isScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
 
-    def extractTextFromHtml(file: File): Option[Concept] = {
+    def extractConceptFromFile(file: File): Option[Concept] = {
       val document = JsoupBrowser() parseFile file.toJava
       for {
         (t1, t2) <- htmlTags
@@ -50,7 +50,7 @@ object UbiquitousScaladoc {
 
     def generateMarkdownFile(dirName: String, concepts: Iterator[Concept], targetDir: File): Unit = {
       val table = addConceptsToTable(concepts)
-      val file: File = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
+      val file = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
       file < table.serialize
     }
 
