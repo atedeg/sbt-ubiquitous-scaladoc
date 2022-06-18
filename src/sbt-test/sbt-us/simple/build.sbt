@@ -1,5 +1,5 @@
-ThisBuild / ubiquitousScaladoc / usSourceHtmlDir := file("api")
-ThisBuild / ubiquitousScaladoc / usTargetMarkdownDir := file("customTarget")
+ThisBuild / ubiquitousScaladoc / sourceHtmlDir := file("api")
+ThisBuild / ubiquitousScaladoc / targetMarkdownDir := file("customTarget")
 
 lazy val root = (project in file("."))
   .settings(
