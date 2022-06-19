@@ -54,8 +54,8 @@ jobs:
       - name: WartRemover
         run: sbt wartremoverInspect
 
-      - name: Test
-        run: sbt test
+      - name: Plugin test
+        run: sbt scripted
 
   publish:
     name: Publish
