@@ -1,3 +1,7 @@
+ThisBuild / scalafixDependencies ++= Seq(
+  "com.github.liancheng" %% "organize-imports" % "0.6.0",
+)
+
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
