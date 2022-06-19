@@ -6,6 +6,8 @@ ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scala
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
 ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Nothing)
+ThisBuild / publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 
 resolvers += "jitpack" at "https://jitpack.io"
 
@@ -17,7 +19,7 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    version := "0.1.0-SNAPSHOT",
+    version := "0.1.0",
     name := "sbt-ubiquitous-scaladoc",
     sbtPlugin := true,
     scriptedLaunchOpts := {
