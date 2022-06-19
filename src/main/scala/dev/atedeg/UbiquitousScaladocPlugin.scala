@@ -14,6 +14,8 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
     ubidoc := Ubidoc(
       (ubidoc / sourceHtmlDir).value,
       (ubidoc / targetMarkdownDir).value,
+      (ubidoc / htmlTags).value,
+      (ubidoc / tableHeaders).value,
     ),
   )
 
