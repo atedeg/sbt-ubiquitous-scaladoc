@@ -1,4 +1,4 @@
-ThisBuild / ubidoc / sourceHtmlDir := file("api\\dev\\atedeg")
+ThisBuild / ubidoc / sourceHtmlDir := file("api/dev/atedeg")
 ThisBuild / ubidoc / targetMarkdownDir := file("customTarget")
 ThisBuild / ubidoc / tableHeaders := Seq("Term", "Definition")
 ThisBuild / ubidoc / htmlTags := Seq("title", "div.doc > p")
