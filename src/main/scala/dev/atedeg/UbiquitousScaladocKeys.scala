@@ -13,6 +13,9 @@ trait UbiquitousScaladocKeys {
   val tableHeaders: SettingKey[Seq[String]] =
     settingKey[Seq[String]]("The headers of the markdown table")
 
+  val fileNameSuffix: SettingKey[String] =
+    settingKey[String]("The suffix of the generated file's name")
+
   val sourceHtmlDir: SettingKey[File] =
     settingKey[File]("The source directory to generate ubiquitous language markdown tables from")
 
