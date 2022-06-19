@@ -1,3 +1,10 @@
+# [1.0.0-beta.2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/1.0.0-beta.1...1.0.0-beta.2) (2022-06-19)
+
+
+### Bug Fixes
+
+* get branch name from git command ([e0fe7e8](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/e0fe7e89ffb14d66e7b2d6d68c8e888ed0ca0d32))
+
 # 1.0.0-beta.1 (2022-06-19)
 
 
