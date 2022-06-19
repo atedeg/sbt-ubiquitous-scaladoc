@@ -20,7 +20,6 @@ object Ubidoc {
   def apply(sourceDir: JFile, targetDir: JFile, htmlTags: Seq[String], tableHeaders: Seq[String]): Unit =
     Internals.ubiquitousScaladocTask(sourceDir, targetDir, htmlTags, tableHeaders)
 
-
   private object Internals {
 
     def ubiquitousScaladocTask(
@@ -56,10 +55,10 @@ object Ubidoc {
     new Builder() withAlignment Table.ALIGN_LEFT addRow (tableHeaders *)
 
   def generateMarkdownFile(
-                            dirName: String,
-                            rows: Iterator[Seq[String]],
-                            targetDir: File,
-                            tableHeaders: Seq[String],
+      dirName: String,
+      rows: Iterator[Seq[String]],
+      targetDir: File,
+      tableHeaders: Seq[String],
   ): Unit = {
     val table = addConceptsToTable(rows, tableHeaders)
     val file = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
