@@ -2,7 +2,7 @@ package dev.atedeg
 
 import java.io.{ File => JFile }
 
-import better.files.Dsl.{ ls, SymbolicOperations }
+import better.files.Dsl.{SymbolicOperations, ls}
 import better.files.File
 import better.files.FileExtensions
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -31,7 +31,7 @@ object UbiquitousScaladoc {
 
     def directoriesFromDir(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
 
-    def conceptsFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap extractConceptFromFile
+    def conceptsFromFiles(dir: File): Iterator[Concept] = scaladocFilesFromDir(dir) flatMap (extractConceptFromFile(_).toList)
 
     def scaladocFilesFromDir(dir: File): Iterator[File] = ls(dir) filter isScaladocClassFile
 
