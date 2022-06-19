@@ -5,6 +5,7 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / wartremoverErrors ++= Warts.all
 
 resolvers += "jitpack" at "https://jitpack.io"
 
