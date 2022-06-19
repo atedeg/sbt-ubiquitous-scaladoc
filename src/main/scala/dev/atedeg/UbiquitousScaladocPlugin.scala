@@ -1,6 +1,6 @@
 package dev.atedeg
 
-import sbt.{AutoPlugin, Setting, Task}
+import sbt.{ AutoPlugin, Setting, Task }
 
 object UbiquitousScaladocPlugin extends AutoPlugin {
 
