@@ -13,52 +13,62 @@ import net.steppschuh.markdowngenerator.table.Table
 import net.steppschuh.markdowngenerator.table.Table.Builder
 
 object Ubidoc {
-  private val tableHeaders: Seq[String] = Seq("Term", "Definition")
-  private val htmlTags: Option[(String, String)] = Some("title", "div.doc > p")
   private val fileNameSuffix: String = "UbiquitousLanguage"
   private val fileNameExtension: String = ".md"
   private val scaladocFileNameRegex = "[A-Z].*\\.html"
 
-  def apply(sourceDir: JFile, targetDir: JFile): Unit = Internals.ubiquitousScaladocTask(sourceDir, targetDir)
+  def apply(sourceDir: JFile, targetDir: JFile, htmlTags: Seq[String], tableHeaders: Seq[String]): Unit =
+    Internals.ubiquitousScaladocTask(sourceDir, targetDir, htmlTags, tableHeaders)
+
 
   private object Internals {
-    final case class Concept(name: String, description: String)
 
-    def ubiquitousScaladocTask(sourceDir: JFile, targetDir: JFile): Unit = for {
-      dir <- directoriesFromDir(sourceDir.toScala)
-      concepts = conceptsFromFiles(dir)
-    } generateMarkdownFile(dir.name, concepts, targetDir.toScala)
+    def ubiquitousScaladocTask(
+        sourceDir: JFile,
+        targetDir: JFile,
+        htmlTags: Seq[String],
+        tableHeaders: Seq[String],
+    ): Unit = {
+      if (htmlTags.length != tableHeaders.length)
+        throw new IllegalArgumentException("htmlTags and tableHeaders must have the same number of elements")
+      for {
+        dir <- directoriesFromDir(sourceDir.toScala)
+        rows = rowsFromFiles(dir, htmlTags)
+      } generateMarkdownFile(dir.name, rows, targetDir.toScala, tableHeaders)
+    }
 
     def directoriesFromDir(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
 
-    def conceptsFromFiles(dir: File): Iterator[Concept] =
-      scaladocFilesFromDir(dir) flatMap (extractConceptFromFile(_).toList)
+    def rowsFromFiles(dir: File, htmlTags: Seq[String]): Iterator[Seq[String]] =
+      scaladocFilesFromDir(dir) map (extractEntriesFromFile(_, htmlTags))
 
     def scaladocFilesFromDir(dir: File): Iterator[File] = ls(dir) filter isScaladocClassFile
 
     def isScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
 
-    def extractConceptFromFile(file: File): Option[Concept] = {
+    def extractEntriesFromFile(file: File, htmlTags: Seq[String]): Seq[String] = {
       val document = JsoupBrowser() parseFile file.toJava
-      for {
-        (t1, t2) <- htmlTags
-        name <- document >?> text(t1)
-        description <- document >?> text(t2)
-      } yield Concept(name, description)
+      htmlTags flatMap (document >?> text(_))
     }
+  }
 
-    def tableBuilder: Builder = new Builder() withAlignment Table.ALIGN_LEFT addRow (tableHeaders *)
+  def tableBuilder(tableHeaders: Seq[String]): Builder =
+    new Builder() withAlignment Table.ALIGN_LEFT addRow (tableHeaders *)
 
-    def generateMarkdownFile(dirName: String, concepts: Iterator[Concept], targetDir: File): Unit = {
-      val table = addConceptsToTable(concepts)
-      val file = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
-      file < table.serialize
-    }
+  def generateMarkdownFile(
+                            dirName: String,
+                            rows: Iterator[Seq[String]],
+                            targetDir: File,
+                            tableHeaders: Seq[String],
+  ): Unit = {
+    val table = addConceptsToTable(rows, tableHeaders)
+    val file = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"
+    file < table.serialize
+  }
 
-    def addConceptsToTable(concepts: Iterator[Concept]): Table = {
-      val builder: Builder = tableBuilder
-      for { Concept(name, description) <- concepts } builder.addRow(name, description)
-      builder.build()
-    }
+  def addConceptsToTable(rows: Iterator[Seq[String]], tableHeaders: Seq[String]): Table = {
+    val builder: Builder = tableBuilder(tableHeaders)
+    for { row <- rows } builder.addRow(row *)
+    builder.build()
   }
 }
