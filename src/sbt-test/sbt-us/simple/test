@@ -2,4 +2,4 @@
 > doc
 $ mkdir customTarget
 > ubidoc
-$ exists customTarget/generatedUbiquitousLanguage.md
+$ exists customTarget/exampleUbiquitousLanguage.md
