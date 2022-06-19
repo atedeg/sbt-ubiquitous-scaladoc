@@ -19,7 +19,7 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    version := "0.1.0",
+    version := "1.0.0-beta.1",
     name := "sbt-ubiquitous-scaladoc",
     sbtPlugin := true,
     scriptedLaunchOpts := {
