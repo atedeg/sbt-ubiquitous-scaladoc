@@ -4,7 +4,7 @@ import sbt._
 
 trait UbiquitousScaladocKeys {
 
-  val ubiquitousScaladoc: TaskKey[Unit] =
+  val ubidoc: TaskKey[Unit] =
     taskKey[Unit]("Task for creating a Ubiquitous Language markdown table out of a Scaladoc html file")
 
   val sourceHtmlDir: SettingKey[File] =
