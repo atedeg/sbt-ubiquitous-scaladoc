@@ -16,7 +16,13 @@ object Ubidoc {
   private val fileNameExtension: String = ".md"
   private val scaladocFileNameRegex = "[A-Z].*\\.html"
 
-  def apply(sourceDir: JFile, targetDir: JFile, htmlTags: Seq[String], tableHeaders: Seq[String], fileNameSuffix: String): Unit =
+  def apply(
+      sourceDir: JFile,
+      targetDir: JFile,
+      htmlTags: Seq[String],
+      tableHeaders: Seq[String],
+      fileNameSuffix: String,
+  ): Unit =
     Internals.ubiquitousScaladocTask(sourceDir, targetDir, htmlTags, tableHeaders, fileNameSuffix)
 
   private object Internals {
@@ -29,7 +35,7 @@ object Ubidoc {
         fileNameSuffix: String,
     ): Unit = {
       if (htmlTags.length != tableHeaders.length)
-        throw new IllegalArgumentException("htmlTags and tableHeaders must have the same number of elements")
+        throw new IllegalArgumentException("'htmlTags' and 'tableHeaders' must have the same number of elements")
       for {
         dir <- directoriesFromDir(sourceDir.toScala)
         rows = rowsFromFiles(dir, htmlTags)
@@ -39,13 +45,13 @@ object Ubidoc {
     def directoriesFromDir(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
 
     def rowsFromFiles(dir: File, htmlTags: Seq[String]): Iterator[Seq[String]] =
-      scaladocFilesFromDir(dir) map (extractEntriesFromFile(_, htmlTags))
+      scaladocFilesFromDir(dir) map (extractEntitiesFromFile(_, htmlTags))
 
     def scaladocFilesFromDir(dir: File): Iterator[File] = ls(dir) filter isScaladocClassFile
 
     def isScaladocClassFile(file: File): Boolean = file.name matches scaladocFileNameRegex
 
-    def extractEntriesFromFile(file: File, htmlTags: Seq[String]): Seq[String] = {
+    def extractEntitiesFromFile(file: File, htmlTags: Seq[String]): Seq[String] = {
       val document = JsoupBrowser() parseFile file.toJava
       htmlTags flatMap (document >?> text(_))
     }
