@@ -13,12 +13,11 @@ import net.steppschuh.markdowngenerator.table.Table
 import net.steppschuh.markdowngenerator.table.Table.Builder
 
 object Ubidoc {
-  private val fileNameSuffix: String = "UbiquitousLanguage"
   private val fileNameExtension: String = ".md"
   private val scaladocFileNameRegex = "[A-Z].*\\.html"
 
-  def apply(sourceDir: JFile, targetDir: JFile, htmlTags: Seq[String], tableHeaders: Seq[String]): Unit =
-    Internals.ubiquitousScaladocTask(sourceDir, targetDir, htmlTags, tableHeaders)
+  def apply(sourceDir: JFile, targetDir: JFile, htmlTags: Seq[String], tableHeaders: Seq[String], fileNameSuffix: String): Unit =
+    Internals.ubiquitousScaladocTask(sourceDir, targetDir, htmlTags, tableHeaders, fileNameSuffix)
 
   private object Internals {
 
@@ -27,13 +26,14 @@ object Ubidoc {
         targetDir: JFile,
         htmlTags: Seq[String],
         tableHeaders: Seq[String],
+        fileNameSuffix: String,
     ): Unit = {
       if (htmlTags.length != tableHeaders.length)
         throw new IllegalArgumentException("htmlTags and tableHeaders must have the same number of elements")
       for {
         dir <- directoriesFromDir(sourceDir.toScala)
         rows = rowsFromFiles(dir, htmlTags)
-      } generateMarkdownFile(dir.name, rows, targetDir.toScala, tableHeaders)
+      } generateMarkdownFile(dir.name, rows, targetDir.toScala, tableHeaders, fileNameSuffix)
     }
 
     def directoriesFromDir(sourceDir: File): Iterator[File] = ls(sourceDir) filter (_.isDirectory)
@@ -59,6 +59,7 @@ object Ubidoc {
       rows: Iterator[Seq[String]],
       targetDir: File,
       tableHeaders: Seq[String],
+      fileNameSuffix: String,
   ): Unit = {
     val table = addConceptsToTable(rows, tableHeaders)
     val file = targetDir / s"$dirName$fileNameSuffix$fileNameExtension"

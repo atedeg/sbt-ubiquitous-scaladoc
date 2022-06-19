@@ -11,11 +11,13 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
   import autoImport.*
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
+    ubidoc / fileNameSuffix := "UbiquitousLanguage",
     ubidoc := Ubidoc(
       (ubidoc / sourceHtmlDir).value,
       (ubidoc / targetMarkdownDir).value,
       (ubidoc / htmlTags).value,
       (ubidoc / tableHeaders).value,
+      (ubidoc / fileNameSuffix).value,
     ),
   )
 
