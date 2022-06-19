@@ -12,7 +12,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL.deepFunctorOps
 import net.steppschuh.markdowngenerator.table.Table
 import net.steppschuh.markdowngenerator.table.Table.Builder
 
-object UbiquitousScaladoc {
+object Ubidoc {
   private val tableHeaders: Seq[String] = Seq("Term", "Definition")
   private val htmlTags: Option[(String, String)] = Some("title", "div.doc > p")
   private val fileNameSuffix: String = "UbiquitousLanguage"

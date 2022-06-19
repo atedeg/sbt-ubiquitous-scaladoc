@@ -1,6 +1,6 @@
 package dev.atedeg
 
-import sbt.{ AutoPlugin, Setting, Task }
+import sbt.{ AutoPlugin, Setting }
 
 object UbiquitousScaladocPlugin extends AutoPlugin {
 
@@ -10,10 +10,10 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override lazy val buildSettings: Seq[Setting[Task[Unit]]] = Seq(
-    ubiquitousScaladoc := UbiquitousScaladoc(
-      (ubiquitousScaladoc / sourceHtmlDir).value,
-      (ubiquitousScaladoc / targetMarkdownDir).value,
+  override lazy val buildSettings: Seq[Setting[_]] = Seq(
+    ubidoc := Ubidoc(
+      (ubidoc / sourceHtmlDir).value,
+      (ubidoc / targetMarkdownDir).value,
     ),
   )
 
