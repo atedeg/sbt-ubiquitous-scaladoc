@@ -1,3 +1,16 @@
+# [1.0.0-beta.3](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/1.0.0-beta.2...1.0.0-beta.3) (2022-07-03)
+
+
+### Bug Fixes
+
+* release script ([b3c5174](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/b3c5174e36623241fe60fb3f8b5b1c3ef530e1a6))
+* wartremover silence errors ([b9c3500](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/b9c35005ec83c83bf1ecb8aeb5e38cf7a0091a09))
+
+
+### Features
+
+* add fileNameSuffix key ([cb97277](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/cb97277e51258db80bb07e540072930792266725))
+
 # [1.0.0-beta.2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/1.0.0-beta.1...1.0.0-beta.2) (2022-06-19)
 
 
