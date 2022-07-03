@@ -9,6 +9,5 @@ object Ubidoc {
 
     def ubiquitousScaladocTask(workingDir: JFile, targetDir: JFile): Unit = ???
 
-
   }
 }
