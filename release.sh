@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 branch=$(git rev-parse --abbrev-ref HEAD)
 nextReleaseVersion=$1
