@@ -1,5 +1,6 @@
 package dev.atedeg
 
+import sbt.Keys.baseDirectory
 import sbt.{ AutoPlugin, Setting }
 
 object UbiquitousScaladocPlugin extends AutoPlugin {
@@ -14,7 +15,7 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
     ubidoc := Ubidoc(
       (ubidoc / workingDirectory).value,
       (ubidoc / targetDirectory).value,
+      (ubidoc / baseDirectory).value,
     ),
   )
-
 }
