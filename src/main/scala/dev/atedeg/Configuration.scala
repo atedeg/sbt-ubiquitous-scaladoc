@@ -19,16 +19,17 @@ final case class Selector(selector: String) {
       .filterOrElse(_.nonEmpty, s"No files found matching selector $selector")
   }
 
-  private def unsafeToFiles(workingDir: File): List[File] = {
-    val dir = File(workingDir, selector)
-    if (dir.isDirectory) dir.listHtmlFiles.toList
-    else {
-      workingDir.listHtmlFiles.find(_.nameWithoutExtension == selector) match {
-        case Some(f) => List(f)
-        case None => workingDir.globHtmlFiles(selector).toList
-      }
+  private def unsafeToFiles(workingDir: File): List[File] =
+    htmlFilesInDirectory(File(workingDir, selector)) ++ selectorToFileOrGlob(workingDir)
+
+  private def selectorToFileOrGlob(workingDir: File): List[File] =
+    workingDir.listHtmlFiles.find(_.nameWithoutExtension == selector) match {
+      case Some(f) => List(f)
+      case None => workingDir.globHtmlFiles(selector).toList
     }
-  }
+
+  private def htmlFilesInDirectory(dir: File): List[File] =
+    if (dir.isDirectory) dir.listHtmlFiles.toList else List()
 }
 
 final case class Configuration(ignored: List[Selector], tables: List[TableConfig])
