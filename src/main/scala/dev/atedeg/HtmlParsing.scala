@@ -8,7 +8,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL.*
 object HtmlParsing {
 
   def extractColumn(document: Browser#DocumentType, columnConfig: ColumnConfig): Either[String, String] =
-    (document >?> element(columnConfig.selector))
+    (document >?> element(columnConfig.htmlTag))
       .map(_.childNodes)
       .map(toMarkdown)
       .toRight(s"Cannot extract column ${columnConfig.name}")
