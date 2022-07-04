@@ -1,12 +1,11 @@
 package dev.atedeg
 
 import scala.util.Try
-
 import better.files.File
-import io.circe.Json
+import io.circe.{Decoder, Json}
 import io.circe.generic.auto.*
 import io.circe.yaml.parser
-import cats.implicits._
+import cats.implicits.*
 
 final case class Selector(selector: String)
 final case class Configuration(ignored: List[Selector], tables: List[TableConfig])
@@ -14,13 +13,19 @@ final case class TableConfig(name: String, columns: List[ColumnConfig], rows: Li
 final case class ColumnConfig(name: String, selector: String)
 
 object Configuration {
+  private val configFile = ".ubidoc"
 
   def read(defaultLocation: File): Either[String, Configuration] =
-    Try((defaultLocation / ".unidoc").contentAsString).toEither.leftMap(_.toString).flatMap(parse)
+    Try((defaultLocation / configFile).contentAsString).toEither.leftMap(_.toString).flatMap(parse)
 
-  private def parse(raw: String): Either[String, Configuration] =
+  def parse(raw: String): Either[String, Configuration] =
     parser.parse(raw).toOption.flatMap(parseJson).toRight("Can not parse configuration file")
-  private def parseJson(json: Json): Option[Configuration] = json.as[Configuration].toOption
+
+  private def parseJson(json: Json): Option[Configuration] = {
+    implicit val decoder: Decoder[List[Selector]] =
+      Decoder.decodeList(Decoder.decodeString.map(Selector(_)))
+    json.as[Configuration].toOption
+  }
 }
 
 object Selector {
