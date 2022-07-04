@@ -4,7 +4,6 @@ import scala.util.Try
 
 import better.files.File
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
-import better.files.Dsl.SymbolicOperations
 import cats.implicits.*
 import net.steppschuh.markdowngenerator.table.Table.ALIGN_LEFT
 import net.steppschuh.markdowngenerator.table.Table.Builder
