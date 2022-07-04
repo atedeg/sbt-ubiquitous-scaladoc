@@ -32,7 +32,7 @@ object Ubidoc {
     }
 
     def listAllFiles(workingDir: File): Either[String, Set[File]] =
-      Try(workingDir.listRecursively).toEither.map(_.toSet)
+      Try(workingDir.listHtmlFiles).toEither.map(_.toSet)
 
     def getIgnoredFiles(conf: Configuration, workingDir: File): Either[String, Set[File]] =
       conf.ignored.flatTraverse(_.toFiles(workingDir)).map(_.toSet)
