@@ -1,14 +1,17 @@
 package dev.atedeg
 
 import scala.util.Try
+
 import better.files.File
-import io.circe.{Decoder, Json}
+import io.circe.{ Decoder, Json }
 import io.circe.generic.auto.*
 import io.circe.yaml.parser
 import cats.implicits.*
+
 import Extensions.*
 
 sealed trait Selector {
+
   def toFiles(workingDir: File): Either[String, List[File]] =
     Try(unsafeToFiles(workingDir, this))
       .map(_.sortBy(_.name))
