@@ -20,7 +20,7 @@ final case class Table(title: String, columnsName: List[String], rows: List[Row]
   }
 
   def serialize(targetDir: File): Try[Unit] = {
-    val file = targetDir / title / ".md"
+    val file = targetDir / s"$title.md"
     Try(file < this.toString)
   }
 }
