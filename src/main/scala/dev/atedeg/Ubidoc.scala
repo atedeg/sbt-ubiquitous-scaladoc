@@ -1,10 +1,13 @@
 package dev.atedeg
 
+import java.io.{ File => JFile }
+
+import scala.util.Try
+
 import better.files.{ File, FileExtensions }
 import cats.implicits.*
 
-import java.io.{ File => JFile }
-import scala.util.Try
+import Extensions._
 
 object Ubidoc {
 
@@ -29,10 +32,10 @@ object Ubidoc {
     }
 
     def listAllFiles(workingDir: File): Either[String, Set[File]] =
-      Try(workingDir.listRecursively).toEither.leftMap(_.toString).map(_.toSet)
+      Try(workingDir.listRecursively).toEither.map(_.toSet)
 
     def getIgnoredFiles(conf: Configuration, workingDir: File): Either[String, Set[File]] =
-      conf.ignored.flatTraverse(Selector.toFiles(workingDir, _)).map(_.toSet)
+      conf.ignored.flatTraverse(_.toFiles(workingDir)).map(_.toSet)
 
     def parseAllFiles(
         conf: Configuration,
@@ -43,7 +46,7 @@ object Ubidoc {
       for {
         res <- conf.tables.traverse(Table.parse(workingDir, _, ignoredFiles))
         tables = res.map(_._1)
-        _ <- tables.traverse(_.serialize(targetDir)).toEither.leftMap(_.toString)
+        _ <- tables.traverse(_.serialize(targetDir)).toEither
         files = res.flatMap(_._2)
       } yield files.toSet
 

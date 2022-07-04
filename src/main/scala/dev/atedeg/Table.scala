@@ -2,8 +2,6 @@ package dev.atedeg
 
 import scala.util.Try
 
-import dev.atedeg.Selector.toFiles
-
 import better.files.File
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import better.files.Dsl.SymbolicOperations
@@ -31,7 +29,7 @@ object Table {
 
   def parse(workingDir: File, tableConfig: TableConfig, ignoredFiles: Set[File]): Either[String, (Table, List[File])] =
     for {
-      files <- tableConfig.rows.flatTraverse(toFiles(workingDir, _)).map(_.filterNot(ignoredFiles.contains))
+      files <- tableConfig.rows.flatTraverse(_.toFiles(workingDir)).map(_.filterNot(ignoredFiles.contains))
       rows <- files.traverse(parseFile(_, tableConfig.columns))
       columnNames = tableConfig.columns.map(_.name)
     } yield (Table(tableConfig.name, columnNames, rows), files)
