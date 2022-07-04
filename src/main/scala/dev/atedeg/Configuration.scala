@@ -1,20 +1,33 @@
 package dev.atedeg
 
 import scala.util.Try
+
 import better.files.File
-import io.circe.{Decoder, Json}
-import io.circe.generic.auto.*
+import io.circe.{ Decoder, Json }
+import io.circe.generic.auto._
 import io.circe.yaml.parser
-import cats.implicits.*
+import cats.implicits._
+
+import Extensions._
 
 final case class Selector(selector: String) {
+
   def toFiles(workingDir: File): Either[String, List[File]] = {
-    val file = File(workingDir, selector)
-    Try(
-      if (file.isDirectory) file.listRecursively.toList.sortBy(_.name)
-      else if (file.exists) List(file)
-      else workingDir.glob(selector).toList.sortBy(_.name),
-    ).toEither.leftMap(_.toString)
+    Try(unsafeToFiles(workingDir))
+      .map(_.sortBy(_.name))
+      .toEither
+      .filterOrElse(_.nonEmpty, s"No files found matching selector $selector")
+  }
+
+  private def unsafeToFiles(workingDir: File): List[File] = {
+    val dir = File(workingDir, selector)
+    if (dir.isDirectory) dir.listHtmlFiles.toList
+    else {
+      workingDir.listHtmlFiles.find(_.nameWithoutExtension == selector) match {
+        case Some(f) => List(f)
+        case None => workingDir.globHtmlFiles(selector).toList
+      }
+    }
   }
 }
 
@@ -26,12 +39,12 @@ object Configuration {
   private val configFile = ".ubidoc"
 
   def read(defaultLocation: File): Either[String, Configuration] =
-    Try((defaultLocation / configFile).contentAsString).toEither.leftMap(_.toString).flatMap(parse)
+    Try((defaultLocation / configFile).contentAsString).toEither.flatMap(parse)
 
-  def parse(raw: String): Either[String, Configuration] = parser.parse(raw).leftMap(_.toString).flatMap(parseJson)
+  def parse(raw: String): Either[String, Configuration] = parser.parse(raw).flatMap(parseJson)
 
   private def parseJson(json: Json): Either[String, Configuration] = {
     implicit val decoder: Decoder[List[Selector]] = Decoder.decodeList(Decoder.decodeString.map(Selector))
-    json.as[Configuration].leftMap(_.toString)
+    json.as[Configuration]
   }
 }
