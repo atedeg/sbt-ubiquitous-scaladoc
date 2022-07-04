@@ -7,23 +7,28 @@ import net.ruippeixotog.scalascraper.dsl.DSL.*
 
 object HtmlParsing {
 
-  def extractColumn(document: Browser#DocumentType, columnConfig: ColumnConfig): Either[String, String] =
+  def extractColumn(
+      document: Browser#DocumentType,
+      fileName: String,
+      columnConfig: ColumnConfig,
+  ): Either[String, String] = {
     (document >?> element(columnConfig.htmlTag))
       .map(_.childNodes)
-      .map(toMarkdown)
+      .map(toMarkdown(_, fileName))
       .toRight(s"Cannot extract column ${columnConfig.name}")
+  }
 
-  private def toMarkdown(es: Iterable[Node]): String = {
+  private def toMarkdown(es: Iterable[Node], fileName: String): String = {
     es.foldLeft("") { (acc, elem) =>
       elem match {
         case TextNode(s) => acc + s
-        case ElementNode(e) if isLink(e) => acc + toMarkdownLink(e)
-        case ElementNode(e) => acc + toMarkdown(e.childNodes)
+        case ElementNode(e) if isLink(e) => acc + toMarkdownLink(e, fileName)
+        case ElementNode(e) => acc + toMarkdown(e.childNodes, fileName)
       }
     }
   }
 
   private def isLink(e: Element): Boolean = e.tagName == "a"
-  private def toMarkdownLink(e: Element): String = s"[${e.text}](${e.attr("href")})"
+  private def toMarkdownLink(e: Element, fileName: String): String = s"[$fileName](${e.text})"
 
 }
