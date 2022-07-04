@@ -35,6 +35,6 @@ object Table {
 
   private def parseFile(file: File, columnConfigs: List[ColumnConfig]): Either[String, Row] = {
     val document = JsoupBrowser() parseFile file.toJava
-    columnConfigs.map(HtmlParsing.extractColumn(document, _)).sequence.map(Row)
+    columnConfigs.map(HtmlParsing.extractColumn(document, file.nameWithoutExtension, _)).sequence.map(Row)
   }
 }
