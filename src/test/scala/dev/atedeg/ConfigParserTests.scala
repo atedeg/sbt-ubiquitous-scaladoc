@@ -23,38 +23,39 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
   it should " parse a correct string" in {
     val correctString =
       """
-        |ignored: ["ignored1", "ignored2"]
+        |ignored:
+        | - file: "ignored1"
+        | - dir: "ignored2"
+        | - glob: "ignored3"
+        |
         |tables:
         | - name: "table1"
         |   columns:
         |     - name: "col1"
-        |       selector: "sel1"
+        |       htmlTag: "sel1"
         |   rows:
-        |     - "row1"
-        |     - "row2"
+        |     - file: "row1"
+        |     - dir: "row2"
+        |     - glob: "row3"
         | - name: "table2"
         |   columns:
         |     - name: "col2"
-        |       selector: "sel2"
+        |       htmlTag: "sel2"
         |     - name: "col3"
-        |       selector: "sel3"
+        |       htmlTag: "sel3"
         |   rows:
-        |     - "row3"
-        |     - "row4"
+        |     - file: "row1"
+        |     - dir: "row2"
+        |     - glob: "row3"
         |      """.stripMargin
+
+    val ignored = List[Selector](FileSelector("ignored1"), DirSelector("ignored2"), GlobSelector("ignored3"))
+    val rows = List[Selector](FileSelector("row1"), DirSelector("row2"), GlobSelector("row3"))
     val expected = Configuration(
-      List("ignored1", "ignored2").map(Selector(_)),
+      ignored,
       List(
-        TableConfig(
-          "table1",
-          List(ColumnConfig("col1", "sel1")),
-          List("row1", "row2").map(Selector(_)),
-        ),
-        TableConfig(
-          "table2",
-          List(ColumnConfig("col2", "sel2"), ColumnConfig("col3", "sel3")),
-          List("row3", "row4").map(Selector(_)),
-        ),
+        TableConfig("table1", List(ColumnConfig("col1", "sel1")), rows),
+        TableConfig("table2", List(ColumnConfig("col2", "sel2"), ColumnConfig("col3", "sel3")), rows),
       ),
     )
     Configuration.parse(correctString) shouldBe Right(expected)
