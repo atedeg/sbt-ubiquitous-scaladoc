@@ -5,6 +5,26 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / developers := List(
+  Developer(
+    "giacomocavalieri",
+    "Giacomo Cavalieri",
+    "giacomo.cavalieri@icloud.com",
+    url("https://github.com/giacomocavalieri"),
+  ),
+  Developer(
+    "ndido98",
+    "Nicolò Di Domenico",
+    "ndido98@gmail.com",
+    url("https://github.com/ndido98"),
+  ),
+  Developer(
+    "vitlinda",
+    "Linda Vitali",
+    "lindav94vitali@gmail.com",
+    url("https://github.com/vitlinda"),
+  ),
+)
 ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Nothing, Wart.Equals, Wart.Throw, Wart.SizeIs, Wart.Option2Iterable)
 ThisBuild / publishTo := sonatypePublishToBundle.value
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
@@ -19,7 +39,6 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    version := "1.0.0-beta.3",
     name := "sbt-ubiquitous-scaladoc",
     sbtPlugin := true,
     scriptedLaunchOpts := {
