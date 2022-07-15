@@ -16,7 +16,7 @@ import Extensions.*
 final case class Row(term: String, definition: String)
 object Row {
   private def normalizeName(name: String): String =
-    name.split("[A-Z]").toList.map(_.toLowerCase(UK)).mkString(" ").capitalize
+    name.split("(?=\\p{Upper})").toList.map(_.toLowerCase(UK)).mkString(" ").capitalize
 
   def buildRow(termDefinition: (String, String)): Row =
     Row(normalizeName(termDefinition._1), termDefinition._2)
