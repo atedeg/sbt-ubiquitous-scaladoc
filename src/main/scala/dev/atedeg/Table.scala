@@ -14,6 +14,13 @@ import net.steppschuh.markdowngenerator.table.Table.Builder
 import Extensions.*
 
 final case class Row(term: String, definition: String)
+object Row {
+  private def normalizeName(name: String): String =
+    name.split("[A-Z]").toList.map(_.toLowerCase(UK)).mkString(" ").capitalize
+
+  def buildRow(termDefinition: (String, String)): Row =
+    Row(normalizeName(termDefinition._1), termDefinition._2)
+}
 
 final case class Table(title: String, termName: String, definitionName: String, rows: List[Row]) {
 
@@ -48,18 +55,11 @@ object Table {
       case EnumCase(name, lookupFile) => parseNonClassLike(name, lookupFile, lookupDir)
     }
 
-    def parseClassLike(name: String, lookupDir: File): Either[Error, Row] = for {
-      file <- findFile(name + ".html", lookupDir)
-      termDefinition <- extractClassLike(file)
-    } yield Row(normalizeName(termDefinition._1), termDefinition._2)
+    def parseClassLike(name: String, lookupDir: File): Either[Error, Row] =
+      findFile(name + ".html", lookupDir).flatMap(extractClassLike).map(Row.buildRow)
 
-    def parseNonClassLike(name: String, lookupFile: String, lookupDir: File): Either[Error, Row] = for {
-      file <- findFile(lookupFile, lookupDir)
-      termDefinition <- extractNonClassLike(file, name)
-    } yield Row(normalizeName(termDefinition._1), termDefinition._2)
-
-    def normalizeName(name: String): String =
-      name.split("[A-Z]").toList.map(_.toLowerCase(UK)).mkString(" ").capitalize
+    def parseNonClassLike(name: String, lookupFile: String, lookupDir: File): Either[Error, Row] =
+      findFile(lookupFile, lookupDir).flatMap(extractNonClassLike(_, name)).map(Row.buildRow)
 
     def findFile(name: String, lookupDir: File): Either[Error, File] =
       lookupDir.listHtmlFiles.filter(_.name == name).toList match {
