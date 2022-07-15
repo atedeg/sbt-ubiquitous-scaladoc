@@ -1,5 +1,7 @@
 package dev.atedeg
 
+import java.util.Locale.UK
+
 import scala.util.Try
 
 import dev.atedeg.HtmlParsing.{ extractClassLike, extractNonClassLike }
@@ -49,12 +51,15 @@ object Table {
     def parseClassLike(name: String, lookupDir: File): Either[Error, Row] = for {
       file <- findFile(name + ".html", lookupDir)
       termDefinition <- extractClassLike(file)
-    } yield Row(termDefinition._1, termDefinition._2)
+    } yield Row(normalizeName(termDefinition._1), termDefinition._2)
 
     def parseNonClassLike(name: String, lookupFile: String, lookupDir: File): Either[Error, Row] = for {
       file <- findFile(lookupFile, lookupDir)
       termDefinition <- extractNonClassLike(file, name)
-    } yield Row(termDefinition._1, termDefinition._2)
+    } yield Row(normalizeName(termDefinition._1), termDefinition._2)
+
+    def normalizeName(name: String): String =
+      name.split("[A-Z]").toList.map(_.toLowerCase(UK)).mkString(" ").capitalize
 
     def findFile(name: String, lookupDir: File): Either[Error, File] =
       lookupDir.listHtmlFiles.filter(_.name == name).toList match {
