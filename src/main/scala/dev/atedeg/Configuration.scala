@@ -3,8 +3,8 @@ package dev.atedeg
 import scala.util.Try
 
 import better.files.File
+import io.circe.parser.{ parse => parseJsonString }
 import io.circe.{ Decoder, Json }
-import io.circe.generic.auto.*
 import io.circe.yaml.parser
 import cats.implicits.*
 
@@ -14,6 +14,18 @@ final case class IgnoredTrait(traitName: String) extends IgnoredSelector
 final case class IgnoredEnum(enumName: String) extends IgnoredSelector
 final case class IgnoredType(typeName: String) extends IgnoredSelector
 final case class IgnoredEnumCase(caseName: String) extends IgnoredSelector
+
+object IgnoredSelector {
+
+  def fromKind(kind: String, name: String): Option[IgnoredSelector] = kind match {
+    case "class" => Some(IgnoredClass(name))
+    case "trait" => Some(IgnoredTrait(name))
+    case "type" => Some(IgnoredType(name))
+    case "enum" => Some(IgnoredEnum(name))
+    case "case" => Some(IgnoredEnumCase(name))
+    case _ => None
+  }
+}
 
 sealed trait Selector {
 
@@ -40,21 +52,50 @@ final case class TableConfig(
     rows: List[Selector],
 )
 
+private object Utils {
+
+  private def openFile(file: File): Either[Error, String] =
+    Try(file.contentAsString).toEither.leftMap(ExternalError)
+
+  def parseFileWith[A](file: File)(parser: String => Either[Error, A]): Either[Error, A] =
+    openFile(file).flatMap(parser)
+}
+
+object AllEntities {
+  private val entitiesFileName = "searchData.js"
+
+  private def allEntitiesFile(workingDir: File): File =
+    workingDir / "target" / "site" / "scripts" / entitiesFileName
+
+  def read(workingDir: File): Either[Error, Set[IgnoredSelector]] =
+    Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
+
+  private[atedeg] def parse(raw: String): Either[Error, Set[IgnoredSelector]] =
+    parseJsonString(raw).leftMap(CirceParsingFailure).flatMap(parseJson)
+
+  private def parseJson(json: Json): Either[Error, Set[IgnoredSelector]] = {
+    implicit val decodeIgnoredSelector: Decoder[Option[IgnoredSelector]] =
+      Decoder.forProduct2("n", "k")(IgnoredSelector.fromKind)
+
+    for {
+      pagesField <- json.findAllByKey("pages").headOption.toRight[Error](ParseError(File(entitiesFileName), "pages"))
+      res <- pagesField.as[Set[Option[IgnoredSelector]]].leftMap(CirceDecodingFailure)
+    } yield res.collect { case Some(s) => s }
+  }
+}
+
 object Configuration {
   private val configFile = ".ubidoc"
 
-  def readAllEntities: Either[Error, Set[IgnoredSelector]] = ???
-
   def read(workingDir: File): Either[Error, Configuration] =
-    Try((workingDir / configFile).contentAsString).toEither.leftMap(ExternalError).flatMap(parse)
+    Utils.parseFileWith(workingDir / configFile)(parse)
 
-  def parse(raw: String): Either[Error, Configuration] = {
-    val json: Either[Error, Json] = parser.parse(raw).leftMap(CirceParsingFailure)
-    json.flatMap(parseJson)
-  }
+  private[atedeg] def parse(raw: String): Either[Error, Configuration] =
+    parser.parse(raw).leftMap[Error](CirceParsingFailure).flatMap(parseJson)
 
   @SuppressWarnings(Array("org.wartremover.warts.IterableOps"))
   private def parseJson(json: Json): Either[CirceDecodingFailure, Configuration] = {
+    import io.circe.generic.auto.*
     implicit val decodeSelector: Decoder[Selector] = {
       List[Decoder[Selector]](
         Decoder[Class].widen,
