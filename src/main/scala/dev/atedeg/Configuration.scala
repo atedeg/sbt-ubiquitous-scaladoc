@@ -17,7 +17,7 @@ final case class IgnoredEnumCase(caseName: String) extends IgnoredSelector
 
 object IgnoredSelector {
 
-  def fromKind(kind: String, name: String): Option[IgnoredSelector] = kind match {
+  def fromKind(name: String, kind: String): Option[IgnoredSelector] = kind match {
     case "class" => Some(IgnoredClass(name))
     case "trait" => Some(IgnoredTrait(name))
     case "type" => Some(IgnoredType(name))
@@ -70,17 +70,18 @@ object AllEntities {
   def read(workingDir: File): Either[Error, Set[IgnoredSelector]] =
     Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
 
-  private[atedeg] def parse(raw: String): Either[Error, Set[IgnoredSelector]] =
-    parseJsonString(raw).leftMap(CirceParsingFailure).flatMap(parseJson)
+  private[atedeg] def parse(raw: String): Either[Error, Set[IgnoredSelector]] = {
+    val sanitizedRaw = raw.replaceFirst("pages = ", "").replaceFirst(";", "")
+    parseJsonString(sanitizedRaw).leftMap(CirceParsingFailure).flatMap(parseJson)
+  }
 
   private def parseJson(json: Json): Either[Error, Set[IgnoredSelector]] = {
     implicit val decodeIgnoredSelector: Decoder[Option[IgnoredSelector]] =
       Decoder.forProduct2("n", "k")(IgnoredSelector.fromKind)
-
-    for {
-      pagesField <- json.findAllByKey("pages").headOption.toRight[Error](ParseError(File(entitiesFileName), "pages"))
-      res <- pagesField.as[Set[Option[IgnoredSelector]]].leftMap(CirceDecodingFailure)
-    } yield res.collect { case Some(s) => s }
+    json
+      .as[Set[Option[IgnoredSelector]]]
+      .map(_.collect { case Some(s) => s })
+      .leftMap(CirceDecodingFailure)
   }
 }
 

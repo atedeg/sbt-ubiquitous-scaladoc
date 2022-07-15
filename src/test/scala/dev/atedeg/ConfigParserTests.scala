@@ -6,11 +6,11 @@ import org.scalatest.matchers.should.Matchers
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 class ConfigParserTests extends AnyFlatSpec with Matchers {
 
-  "parse" should " fail with an empty string" in {
+  "parse" should "fail with an empty string" in {
     Configuration.parse("") should matchPattern { case Left(_) => }
   }
 
-  it should " fail with a malformed string" in {
+  it should "fail with a malformed string" in {
     val malformedString =
       """
         |ignored: []
@@ -21,7 +21,7 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
     Configuration.parse(malformedString) should matchPattern { case Left(_) => }
   }
 
-  it should " parse a correct string" in {
+  it should "parse a correct string" in {
     val correctString =
       """
         |ignored:
