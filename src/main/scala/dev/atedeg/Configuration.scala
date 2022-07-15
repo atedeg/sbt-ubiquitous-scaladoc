@@ -8,6 +8,8 @@ import io.circe.{ Decoder, Json }
 import io.circe.yaml.parser
 import cats.implicits.*
 
+import Extensions.*
+
 sealed trait IgnoredSelector
 final case class IgnoredClass(className: String) extends IgnoredSelector
 final case class IgnoredTrait(traitName: String) extends IgnoredSelector
@@ -78,10 +80,7 @@ object AllEntities {
   private def parseJson(json: Json): Either[Error, Set[IgnoredSelector]] = {
     implicit val decodeIgnoredSelector: Decoder[Option[IgnoredSelector]] =
       Decoder.forProduct2("n", "k")(IgnoredSelector.fromKind)
-    json
-      .as[Set[Option[IgnoredSelector]]]
-      .map(_.collect { case Some(s) => s })
-      .leftMap(CirceDecodingFailure)
+    json.as[Set[Option[IgnoredSelector]]].map(_.dropNone).leftMap(CirceDecodingFailure)
   }
 }
 
