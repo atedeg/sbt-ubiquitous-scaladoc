@@ -22,8 +22,8 @@ object Ubidoc {
         _ = tables.foreach(_.serialize(targetDir))
       } yield ()
       result match {
-        case Left(err) => throw ???
-        case Right(_) => ()
+        case Left(err) => throw UbidocException(err)
+        case Right(()) => ()
       }
     }
 
