@@ -27,13 +27,6 @@ final case class Table(title: String, termName: String, definitionName: String, 
   }
 }
 
-sealed trait Error
-final case class FileNotFound(lookupDir: File, path: String) extends Error
-final case class ParseError(file: File, tag: String) extends Error
-final case class AmbiguousName(name: String) extends Error
-final case class OverlappingIgnoredAndConsidered(overlapping: Set[IgnoredSelector]) extends Error
-final case class LeftoverEntities(leftovers: Set[IgnoredSelector]) extends Error
-
 object Table {
 
   def parse(config: TableConfig, lookupDir: File): Either[Error, Table] = for {
