@@ -17,8 +17,6 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
         |tables:
         | - name: "table1"
         |   columns:
-        |     - name: "col1"
-        |       selector: "p"
         |      """.stripMargin
     Configuration.parse(malformedString) should matchPattern { case Left(_) => }
   }
@@ -27,38 +25,55 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
     val correctString =
       """
         |ignored:
-        | - file: "ignored1"
-        | - dir: "ignored2"
-        | - glob: "ignored3"
+        | - className: "class"
+        | - typeName: "type"
+        | - caseName: "case"
+        | - enumName: "enum"
+        | - traitName: "trait"
         |
         |tables:
         | - name: "table1"
-        |   columns:
-        |     - name: "col1"
-        |       htmlTag: "sel1"
+        |   termName: "term"
+        |   definitionName: "definition"
         |   rows:
-        |     - file: "row1"
-        |     - dir: "row2"
-        |     - glob: "row3"
+        |     - className: "class"
+        |     - typeName: "type"
+        |       lookupFile: "file"
+        |     - caseName: "case"
+        |       lookupFile: "file"
+        |     - enumName: "enum"
+        |     - traitName: "trait"
         | - name: "table2"
-        |   columns:
-        |     - name: "col2"
-        |       htmlTag: "sel2"
-        |     - name: "col3"
-        |       htmlTag: "sel3"
         |   rows:
-        |     - file: "row1"
-        |     - dir: "row2"
-        |     - glob: "row3"
+        |     - className: "class"
+        |     - typeName: "type"
+        |       lookupFile: "file"
+        |     - caseName: "case"
+        |       lookupFile: "file"
+        |     - enumName: "enum"
+        |     - traitName: "trait"
         |      """.stripMargin
 
-    val ignored = List[Selector](FileSelector("ignored1"), DirSelector("ignored2"), GlobSelector("ignored3"))
-    val rows = List[Selector](FileSelector("row1"), DirSelector("row2"), GlobSelector("row3"))
+    val ignored = Set[IgnoredSelector](
+      IgnoredClass("class"),
+      IgnoredType("type"),
+      IgnoredEnumCase("case"),
+      IgnoredEnum("enum"),
+      IgnoredTrait("trait"),
+    )
+    val rows = List[Selector](
+      Class("class"),
+      Type("type", "file"),
+      EnumCase("case", "file"),
+      Enum("enum"),
+      Trait("trait"),
+    )
+
     val expected = Configuration(
       ignored,
       List(
-        TableConfig("table1", List(ColumnConfig("col1", "sel1")), rows),
-        TableConfig("table2", List(ColumnConfig("col2", "sel2"), ColumnConfig("col3", "sel3")), rows),
+        TableConfig("table1", Some("term"), Some("definition"), rows),
+        TableConfig("table2", None, None, rows),
       ),
     )
     Configuration.parse(correctString) shouldBe Right(expected)

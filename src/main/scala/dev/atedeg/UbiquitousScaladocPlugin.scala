@@ -13,7 +13,7 @@ object UbiquitousScaladocPlugin extends AutoPlugin {
 
   override lazy val buildSettings: Seq[Setting[_]] = Seq(
     ubidoc := Ubidoc(
-      (ubidoc / workingDirectory).value,
+      (ubidoc / lookupDirectory).value,
       (ubidoc / targetDirectory).value,
       (ubidoc / baseDirectory).value,
     ),
