@@ -3,7 +3,9 @@ package dev.atedeg
 import better.files.File
 import io.circe.{ DecodingFailure, ParsingFailure }
 
-final case class UbidocException(error: Error) extends Exception
+final case class UbidocException(error: Error) extends Exception {
+  override def toString: String = error.toString
+}
 
 sealed trait Error
 
