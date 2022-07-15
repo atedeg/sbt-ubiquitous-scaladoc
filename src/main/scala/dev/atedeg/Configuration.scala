@@ -8,8 +8,6 @@ import io.circe.generic.auto.*
 import io.circe.yaml.parser
 import cats.implicits.*
 
-import Extensions.*
-
 sealed trait IgnoredSelector
 final case class IgnoredClass(className: String) extends IgnoredSelector
 final case class IgnoredTrait(traitName: String) extends IgnoredSelector
@@ -47,13 +45,16 @@ object Configuration {
 
   def readAllEntities: Either[Error, Set[IgnoredSelector]] = ???
 
-  def read(workingDir: File): Either[String, Configuration] =
-    Try((workingDir / configFile).contentAsString).toEither.flatMap(parse)
+  def read(workingDir: File): Either[Error, Configuration] =
+    Try((workingDir / configFile).contentAsString).toEither.leftMap(ExternalError).flatMap(parse)
 
-  def parse(raw: String): Either[String, Configuration] = parser.parse(raw).flatMap(parseJson)
+  def parse(raw: String): Either[Error, Configuration] = {
+    val json: Either[Error, Json] = parser.parse(raw).leftMap(CirceParsingFailure)
+    json.flatMap(parseJson)
+  }
 
   @SuppressWarnings(Array("org.wartremover.warts.IterableOps"))
-  private def parseJson(json: Json): Either[String, Configuration] = {
+  private def parseJson(json: Json): Either[CirceDecodingFailure, Configuration] = {
     implicit val decodeSelector: Decoder[Selector] = {
       List[Decoder[Selector]](
         Decoder[Class].widen,
@@ -72,6 +73,6 @@ object Configuration {
         Decoder[IgnoredEnumCase].widen,
       ).reduceLeft(_ or _)
     }
-    json.as[Configuration]
+    json.as[Configuration].leftMap(CirceDecodingFailure)
   }
 }
