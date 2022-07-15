@@ -10,36 +10,45 @@ import cats.implicits.*
 
 import Extensions.*
 
+sealed trait IgnoredSelector
+final case class IgnoredClass(className: String) extends IgnoredSelector
+final case class IgnoredTrait(traitName: String) extends IgnoredSelector
+final case class IgnoredEnum(enumName: String) extends IgnoredSelector
+final case class IgnoredType(typeName: String) extends IgnoredSelector
+final case class IgnoredEnumCase(caseName: String) extends IgnoredSelector
+
 sealed trait Selector {
 
-  def toFiles(workingDir: File): Either[String, List[File]] =
-    Try(unsafeToFiles(workingDir, this))
-      .map(_.sortBy(_.name))
-      .toEither
-      .filterOrElse(_.nonEmpty, s"No files found matching selector $this")
-
-  private def unsafeToFiles(workingDir: File, s: Selector): List[File] = s match {
-    case FileSelector(file) => workingDir.listHtmlFiles.find(_.nameWithoutExtension == file).toList
-    case DirSelector(dir) => htmlFilesInDirectory(File(workingDir, dir))
-    case GlobSelector(glob) => workingDir.globHtmlFiles(glob).toList
+  def toIgnored: IgnoredSelector = this match {
+    case Class(className) => IgnoredClass(className)
+    case Trait(traitName) => IgnoredTrait(traitName)
+    case Enum(enumName) => IgnoredEnum(enumName)
+    case Type(typeName, _) => IgnoredType(typeName)
+    case EnumCase(caseName, _) => IgnoredEnumCase(caseName)
   }
-
-  private def htmlFilesInDirectory(dir: File): List[File] =
-    if (dir.isDirectory) dir.listHtmlFiles.toList else List()
 }
-final case class FileSelector(file: String) extends Selector
-final case class DirSelector(dir: String) extends Selector
-final case class GlobSelector(glob: String) extends Selector
+final case class Class(className: String) extends Selector
+final case class Trait(traitName: String) extends Selector
+final case class Enum(enumName: String) extends Selector
+final case class Type(typeName: String, lookupFile: String) extends Selector
+final case class EnumCase(caseName: String, lookupFile: String) extends Selector
 
-final case class Configuration(ignored: List[Selector], tables: List[TableConfig])
-final case class TableConfig(name: String, columns: List[ColumnConfig], rows: List[Selector])
-final case class ColumnConfig(name: String, htmlTag: String)
+final case class Configuration(ignored: Set[IgnoredSelector], tables: List[TableConfig])
+
+final case class TableConfig(
+    name: String,
+    termName: Option[String],
+    definitionName: Option[String],
+    rows: List[Selector],
+)
 
 object Configuration {
   private val configFile = ".ubidoc"
 
-  def read(defaultLocation: File): Either[String, Configuration] =
-    Try((defaultLocation / configFile).contentAsString).toEither.flatMap(parse)
+  def readAllEntities: Either[Error, Set[IgnoredSelector]] = ???
+
+  def read(workingDir: File): Either[String, Configuration] =
+    Try((workingDir / configFile).contentAsString).toEither.flatMap(parse)
 
   def parse(raw: String): Either[String, Configuration] = parser.parse(raw).flatMap(parseJson)
 
@@ -47,9 +56,20 @@ object Configuration {
   private def parseJson(json: Json): Either[String, Configuration] = {
     implicit val decodeSelector: Decoder[Selector] = {
       List[Decoder[Selector]](
-        Decoder[FileSelector].widen,
-        Decoder[DirSelector].widen,
-        Decoder[GlobSelector].widen,
+        Decoder[Class].widen,
+        Decoder[Trait].widen,
+        Decoder[Enum].widen,
+        Decoder[Type].widen,
+        Decoder[EnumCase].widen,
+      ).reduceLeft(_ or _)
+    }
+    implicit val decodeIgnoredSelector: Decoder[IgnoredSelector] = {
+      List[Decoder[IgnoredSelector]](
+        Decoder[IgnoredClass].widen,
+        Decoder[IgnoredTrait].widen,
+        Decoder[IgnoredEnum].widen,
+        Decoder[IgnoredType].widen,
+        Decoder[IgnoredEnumCase].widen,
       ).reduceLeft(_ or _)
     }
     json.as[Configuration]
