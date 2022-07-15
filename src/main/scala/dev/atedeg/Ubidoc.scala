@@ -15,7 +15,7 @@ object Ubidoc {
     def ubiquitousScaladocTask(lookupDir: File, targetDir: File, workingDir: File): Unit = {
       val result = for {
         config <- Configuration.read(workingDir)
-        allEntities <- Configuration.readAllEntities
+        allEntities <- AllEntities.read(workingDir)
         consideredEntities = config.tables.flatMap(_.rows).toSet
         _ <- checkConsistency(allEntities, consideredEntities, config.ignored)
         tables <- config.tables.traverse(Table.parse(_, lookupDir))
