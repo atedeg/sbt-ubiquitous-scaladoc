@@ -1,28 +1,15 @@
 package dev.atedeg
 
-import java.util.Locale.UK
+import java.util.Locale.US
 
 import scala.util.Try
-
-import dev.atedeg.HtmlParsing.{ extractClassLike, extractNonClassLike }
-
 import better.files.File
-import cats.implicits.*
 import net.steppschuh.markdowngenerator.table.Table.ALIGN_LEFT
 import net.steppschuh.markdowngenerator.table.Table.Builder
 
-import Extensions.*
+final case class Table[E](title: String, termName: String, definitionName: String, rows: List[E]) {
 
-final case class Row(term: String, definition: String)
-object Row {
-  private def normalizeName(name: String): String =
-    name.split("(?=\\p{Upper})").toList.map(_.toLowerCase(UK)).mkString(" ").capitalize
-
-  def buildRow(termDefinition: (String, String)): Row =
-    Row(normalizeName(termDefinition._1), termDefinition._2)
-}
-
-final case class Table(title: String, termName: String, definitionName: String, rows: List[Row]) {
+  def map[A](f: E => A): Table[A] = Table(title, termName, definitionName, rows.map(f))
 
   override def toString: String = {
     val builder = new Builder().withAlignment(ALIGN_LEFT).addRow(termName, definitionName)
@@ -36,36 +23,13 @@ final case class Table(title: String, termName: String, definitionName: String, 
   }
 }
 
-object Table {
+final case class Row private (term: String, definition: String)
 
-  def parse(config: TableConfig, lookupDir: File): Either[Error, Table] = for {
-    rows <- config.rows.traverse(Internals.parseRow(_, lookupDir))
-    title = config.name
-    termName = config.termName.getOrElse("Term")
-    definitionName = config.definitionName.getOrElse("Definition")
-  } yield Table(title, termName, definitionName, rows)
+object Row {
 
-  private object Internals {
+  private def normalizeName(name: String): String =
+    name.split("(?=\\p{Upper})").toList.map(_.toLowerCase(US)).mkString(" ").capitalize
 
-    def parseRow(row: Selector, lookupDir: File): Either[Error, Row] = row match {
-      case Class(name) => parseClassLike(name, lookupDir)
-      case Trait(name) => parseClassLike(name, lookupDir)
-      case Enum(name) => parseClassLike(name, lookupDir)
-      case Type(name, lookupFile) => parseNonClassLike(name, lookupFile, lookupDir)
-      case EnumCase(name, lookupFile) => parseNonClassLike(name, lookupFile, lookupDir)
-    }
-
-    def parseClassLike(name: String, lookupDir: File): Either[Error, Row] =
-      findFile(name + ".html", lookupDir).flatMap(extractClassLike).map(Row.buildRow)
-
-    def parseNonClassLike(name: String, lookupFile: String, lookupDir: File): Either[Error, Row] =
-      findFile(lookupFile, lookupDir).flatMap(extractNonClassLike(_, name)).map(Row.buildRow)
-
-    def findFile(name: String, lookupDir: File): Either[Error, File] =
-      lookupDir.listHtmlFiles.filter(_.name == name).toList match {
-        case Nil => FileNotFound(lookupDir, name).asLeft
-        case List(f) => f.asRight
-        case _ => AmbiguousName(name).asLeft
-      }
-  }
+  def apply(termDefinition: (String, String)): Row = Row(normalizeName(termDefinition._1), termDefinition._2)
+  def apply(term: String, definition: String): Row = Row((normalizeName(term), definition))
 }
