@@ -9,10 +9,11 @@ import cats.syntax.all._
 
 object HtmlParsing {
 
-  def extractTermAndDefinition(file: File, entity: Entity, allEntities: Set[Entity]): Either[Error, (String, String)] = for {
-    document <- JsoupBrowser().parseFile(file.toJava).asRight
-    doc <- extractDoc(file, document, entity)
-  } yield (entity.name, doc)
+  def extractTermAndDefinition(file: File, entity: Entity, allEntities: Set[Entity]): Either[Error, (String, String)] =
+    for {
+      document <- JsoupBrowser().parseFile(file.toJava).asRight
+      doc <- extractDoc(file, document, entity)
+    } yield (entity.name, doc)
 
   def extractDoc(file: File, document: Browser#DocumentType, entity: Entity): Either[Error, String] = {
     val searchQuery = s"#${entity.entityId.map(_ + " > ").getOrElse("")}div.cover > div.doc"

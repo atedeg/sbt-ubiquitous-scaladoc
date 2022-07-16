@@ -1,11 +1,13 @@
 package dev.atedeg
 
-import better.files.File
-import io.circe.{Decoder, Json}
-import cats.syntax.all._
-import io.circe.parser.{parse => parseJsonString}
-import Extensions._
 import dev.atedeg.HtmlParsing.extractTermAndDefinition
+
+import better.files.File
+import io.circe.{ Decoder, Json }
+import cats.syntax.all._
+import io.circe.parser.{ parse => parseJsonString }
+
+import Extensions._
 
 object EntityParsing {
   private val entitiesFileName = "searchData.js"
@@ -13,7 +15,8 @@ object EntityParsing {
   private def allEntitiesFile(workingDir: File): File =
     workingDir / "target" / "site" / "scripts" / entitiesFileName
 
-  def readAllEntities(workingDir: File): Either[Error, Set[Entity]] = Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
+  def readAllEntities(workingDir: File): Either[Error, Set[Entity]] =
+    Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
 
   private[atedeg] def parse(raw: String): Either[Error, Set[Entity]] = {
     val sanitized = raw.replaceFirst("pages = ", "").replaceFirst(";", "")
@@ -31,6 +34,7 @@ object EntityParsing {
 }
 
 object EntityConversion {
+
   def entityToRow(entity: Entity, baseDir: File, allEntities: Set[Entity]): Either[Error, Row] =
     extractTermAndDefinition(baseDir / entity.sanitizedLink, entity, allEntities).map(Row.from)
 }
