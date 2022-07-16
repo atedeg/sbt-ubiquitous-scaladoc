@@ -1,6 +1,7 @@
 package dev.atedeg
 
 sealed trait EntityType {
+
   override def toString: String = this match {
     case Class => "class"
     case Trait => "trait"
@@ -34,6 +35,7 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
   def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
   def sanitizedLink: String = link.split('#').head
   def entityId: Option[String] = link.split('#').lastOption
+
   def isClassLike: Boolean = entityType match {
     case Class | Trait | Enum => true
     case Type | Case | Def => false
@@ -41,6 +43,10 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
 }
 final case class BaseEntity(entityType: EntityType, name: String)
 final case class Configuration(ignored: Set[BaseEntity], tables: List[TableConfig])
-final case class TableConfig(name: String, termName: Option[String], definitionName: Option[String], rows: List[BaseEntity])
 
-
+final case class TableConfig(
+    name: String,
+    termName: Option[String],
+    definitionName: Option[String],
+    rows: List[BaseEntity],
+)
