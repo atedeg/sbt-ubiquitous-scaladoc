@@ -85,7 +85,7 @@ object AllEntities {
 }
 
 object Configuration {
-  private val configFile = ".ubidoc"
+  private val configFile = ".ubidoc.yaml"
 
   def read(workingDir: File): Either[Error, Configuration] =
     Utils.parseFileWith(workingDir / configFile)(parse)
