@@ -1,12 +1,15 @@
 package dev.atedeg
 
-import java.io.{File => JFile}
-import better.files.{File, FileExtensions}
-import ConfigurationValidation._
-import cats.implicits._
+import java.io.{ File => JFile }
+
 import dev.atedeg.ConfigurationParsing.readConfiguration
 import dev.atedeg.EntityParsing.readAllEntities
 import dev.atedeg.TableUtils.entitiesToRows
+
+import better.files.{ File, FileExtensions }
+import cats.implicits._
+
+import ConfigurationValidation._
 
 object Ubidoc {
 

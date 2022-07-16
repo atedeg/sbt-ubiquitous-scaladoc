@@ -13,7 +13,6 @@ final case class EntityNotFound(baseEntity: BaseEntity) extends Error {
   override def toString: String = s"Could not find entity '$baseEntity'"
 }
 
-
 final case class FileNotFound(lookupDir: File, path: String) extends Error {
   override def toString: String = s"Could not find file '$path' in directory '${lookupDir.pathAsString}'"
 }
