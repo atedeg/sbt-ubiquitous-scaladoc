@@ -1,6 +1,0 @@
-# check the content of the generated file
-> doc
-$ mkdir customTarget
-> ubidoc
-$ exists customTarget/exampleUbiquitousLanguage.md
-> check
