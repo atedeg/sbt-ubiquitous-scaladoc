@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 class ConfigParserTests extends AnyFlatSpec with Matchers {
 
   "parse" should "fail with an empty string" in {
-    Configuration.parse("") should matchPattern { case Left(_) => }
+    ConfigurationParsing.parse("") should matchPattern { case Left(_) => }
   }
 
   it should "fail with a malformed string" in {
@@ -16,58 +16,51 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
         |ignored: []
         |tables:
         | - name: "table1"
-        |   columns:
         |      """.stripMargin
-    Configuration.parse(malformedString) should matchPattern { case Left(_) => }
+    ConfigurationParsing.parse(malformedString) should matchPattern { case Left(_) => }
   }
 
   it should "parse a correct string" in {
     val correctString =
       """
         |ignored:
-        | - className: "class"
-        | - typeName: "type"
-        | - caseName: "case"
-        | - enumName: "enum"
-        | - traitName: "trait"
+        | - class: "class"
+        | - type: "type"
+        | - case: "case"
+        | - enum: "enum"
+        | - trait: "trait"
+        | - def: "def"
         |
         |tables:
         | - name: "table1"
         |   termName: "term"
         |   definitionName: "definition"
         |   rows:
-        |     - className: "class"
-        |     - typeName: "type"
-        |       lookupFile: "file"
-        |     - caseName: "case"
-        |       lookupFile: "file"
-        |     - enumName: "enum"
-        |     - traitName: "trait"
+        |     - class: "class"
+        |     - trait: "trait"
+        |     - enum: "enum"
+        |     - type: "type"
+        |     - case: "case"
+        |     - def: "def"
         | - name: "table2"
         |   rows:
-        |     - className: "class"
-        |     - typeName: "type"
-        |       lookupFile: "file"
-        |     - caseName: "case"
-        |       lookupFile: "file"
-        |     - enumName: "enum"
-        |     - traitName: "trait"
+        |     - class: "class"
+        |     - trait: "trait"
+        |     - enum: "enum"
+        |     - type: "type"
+        |     - case: "case"
+        |     - def: "def"
         |      """.stripMargin
 
-    val ignored = Set[IgnoredSelector](
-      IgnoredClass("class"),
-      IgnoredType("type"),
-      IgnoredEnumCase("case"),
-      IgnoredEnum("enum"),
-      IgnoredTrait("trait"),
+    val rows = List[BaseEntity](
+      BaseEntity(Class, "class"),
+      BaseEntity(Trait, "trait"),
+      BaseEntity(Enum, "enum"),
+      BaseEntity(Type, "type"),
+      BaseEntity(Case, "case"),
+      BaseEntity(Def, "def"),
     )
-    val rows = List[Selector](
-      Class("class"),
-      Type("type", "file"),
-      EnumCase("case", "file"),
-      Enum("enum"),
-      Trait("trait"),
-    )
+    val ignored = rows.toSet
 
     val expected = Configuration(
       ignored,
@@ -76,6 +69,6 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
         TableConfig("table2", None, None, rows),
       ),
     )
-    Configuration.parse(correctString) shouldBe Right(expected)
+    ConfigurationParsing.parse(correctString) shouldBe Right(expected)
   }
 }
