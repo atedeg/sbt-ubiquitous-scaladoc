@@ -12,27 +12,47 @@ object HtmlParsing {
   def extractTermAndDefinition(file: File, entity: Entity, allEntities: Set[Entity]): Either[Error, (String, String)] =
     for {
       document <- JsoupBrowser().parseFile(file.toJava).asRight
-      doc <- extractDoc(file, document, entity)
+      doc <- extractDoc(file, document, entity, allEntities)
     } yield (entity.name, doc)
 
-  def extractDoc(file: File, document: Browser#DocumentType, entity: Entity): Either[Error, String] = {
+  def extractDoc(
+      file: File,
+      document: Browser#DocumentType,
+      entity: Entity,
+      allEntities: Set[Entity],
+  ): Either[Error, String] = {
     val searchQuery = s"#${entity.entityId.map(_ + " > ").getOrElse("")}div.cover > div.doc"
-    extractTagFromDocument(file, document, searchQuery)
+    extractTagFromDocument(file, document, searchQuery, allEntities)
   }
 
-  private def extractTagFromDocument(file: File, doc: Browser#DocumentType, tag: String): Either[Error, String] =
-    doc.tryExtract(element(tag)).map(_.childNodes).map(toMarkdown).toRight(ParseError(file, tag))
+  private def extractTagFromDocument(
+      file: File,
+      doc: Browser#DocumentType,
+      tag: String,
+      allEntities: Set[Entity],
+  ): Either[Error, String] =
+    doc.tryExtract(element(tag)).map(_.childNodes).toRight(ParseError(file, tag)).flatMap(toMarkdown(_, allEntities))
 
-  private def toMarkdown(es: Iterable[Node]): String = {
+  private def toMarkdown(es: Iterable[Node], allEntities: Set[Entity]): Either[Error, String] = {
     def isLink(e: Element): Boolean = e.tagName == "a"
-    def toMarkdownLink(e: Element): String = s"[${extractName(e.text)}](${e.text})"
-    def extractName(fullPath: String): String = fullPath.split('.').last
+    def toMarkdownLink(e: Element) = lookupLinkFor(extractName(e)).map(l => s"[$l](${e.text})")
+    def extractName(e: Element): String = e.attr("href").replace(".html", "")
+    def lookupLinkFor(name: String): Either[Error, String] =
+      allEntities.find(_.name == name).map(_.link.replace("/", ".")).toRight(MissingLink(name))
 
-    es.foldLeft("") { (acc, elem) =>
+    es.foldLeft("".asRight[Error]) { (acc, elem) =>
       elem match {
-        case TextNode(s) => acc + s
-        case ElementNode(e) if isLink(e) => acc + toMarkdownLink(e)
-        case ElementNode(e) => acc + toMarkdown(e.childNodes)
+        case TextNode(s) => acc.map(_ + s)
+        case ElementNode(e) if isLink(e) =>
+          for {
+            a <- acc
+            l <- toMarkdownLink(e)
+          } yield a + l
+        case ElementNode(e) =>
+          for {
+            a <- acc
+            m <- toMarkdown(e.childNodes, allEntities)
+          } yield a + m
       }
     }
   }
