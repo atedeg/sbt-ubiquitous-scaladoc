@@ -1,9 +1,12 @@
 package dev.atedeg
 
-import java.io.{ File => JFile }
-
-import better.files.{ File, FileExtensions }
-import cats.implicits.*
+import java.io.{File => JFile}
+import better.files.{File, FileExtensions}
+import ConfigurationValidation._
+import cats.implicits._
+import dev.atedeg.ConfigurationParsing.readConfiguration
+import dev.atedeg.EntityParsing.readAllEntities
+import dev.atedeg.TableUtils.entitiesToRows
 
 object Ubidoc {
 
@@ -14,27 +17,26 @@ object Ubidoc {
 
     def ubiquitousScaladocTask(lookupDir: File, targetDir: File, workingDir: File): Unit = {
       val result = for {
-        config <- Configuration.read(workingDir)
-        allEntities <- AllEntities.read(workingDir)
-        consideredEntities = config.tables.flatMap(_.rows).toSet
-        _ <- checkConsistency(allEntities, consideredEntities, config.ignored)
-        tables <- config.tables.traverse(Table.parse(_, lookupDir))
-        _ = tables.foreach(_.serialize(targetDir))
-      } yield ()
+        config <- readConfiguration(workingDir)
+        allEntities <- readAllEntities(workingDir)
+        tables <- config.tables.traverse(toTable(_, allEntities))
+        consideredEntities = tables.flatMap(_.rows).toSet
+        _ <- checkConsistency(allEntities.map(_.toBaseEntity), consideredEntities.map(_.toBaseEntity), config.ignored)
+        tables <- tables.traverse(entitiesToRows(_, lookupDir, allEntities))
+      } yield tables.foreach(_.serialize(targetDir))
       result match {
         case Left(err) => throw UbidocException(err)
-        case Right(()) => ()
+        case Right(()) => println("Tables generated!")
       }
     }
 
     private def checkConsistency(
-        allEntities: Set[IgnoredSelector],
-        considered: Set[Selector],
-        ignored: Set[IgnoredSelector],
+        allEntities: Set[BaseEntity],
+        considered: Set[BaseEntity],
+        ignored: Set[BaseEntity],
     ): Either[Error, Unit] = {
-      val c = considered.map(_.toIgnored)
-      val consideredAndIgnoredIntersection = c.intersect(ignored)
-      val leftoverEntities = allEntities.diff(c).diff(ignored)
+      val consideredAndIgnoredIntersection = considered.intersect(ignored)
+      val leftoverEntities = allEntities.diff(considered).diff(ignored)
       if (consideredAndIgnoredIntersection.nonEmpty)
         OverlappingIgnoredAndConsidered(consideredAndIgnoredIntersection).asLeft
       else if (leftoverEntities.nonEmpty) LeftoverEntities(leftoverEntities).asLeft

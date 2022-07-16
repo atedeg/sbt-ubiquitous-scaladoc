@@ -2,21 +2,22 @@ package dev.atedeg
 
 import better.files.File
 import net.ruippeixotog.scalascraper.browser.{ Browser, JsoupBrowser }
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.*
-import net.ruippeixotog.scalascraper.model.*
-import net.ruippeixotog.scalascraper.dsl.DSL.*
-import cats.syntax.all.*
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors._
+import net.ruippeixotog.scalascraper.model._
+import net.ruippeixotog.scalascraper.dsl.DSL._
+import cats.syntax.all._
 
 object HtmlParsing {
 
-  def extractClassLike(file: File): Either[Error, (String, String)] = for {
+  def extractTermAndDefinition(file: File, entity: Entity, allEntities: Set[Entity]): Either[Error, (String, String)] = for {
     document <- JsoupBrowser().parseFile(file.toJava).asRight
-    term <- extractTagFromDocument(file, document, "title")
-    definition <- extractTagFromDocument(file, document, "div.doc > p")
-  } yield (term, definition)
+    doc <- extractDoc(file, document, entity)
+  } yield (entity.name, doc)
 
-  private def extractTagFromElem(file: File, elem: Element, tag: String): Either[Error, String] =
-    elem.tryExtract(element(tag)).map(_.childNodes).map(toMarkdown).toRight(ParseError(file, tag))
+  def extractDoc(file: File, document: Browser#DocumentType, entity: Entity): Either[Error, String] = {
+    val searchQuery = s"#${entity.entityId.map(_ + " > ").getOrElse("")}div.cover > div.doc"
+    extractTagFromDocument(file, document, searchQuery)
+  }
 
   private def extractTagFromDocument(file: File, doc: Browser#DocumentType, tag: String): Either[Error, String] =
     doc.tryExtract(element(tag)).map(_.childNodes).map(toMarkdown).toRight(ParseError(file, tag))
@@ -34,18 +35,4 @@ object HtmlParsing {
       }
     }
   }
-
-  private def extractMany(file: File, doc: Browser#DocumentType, tag: String): Either[Error, List[Element]] =
-    doc.tryExtract(elementList(tag)).toRight(ParseError(file, tag))
-
-  def extractNonClassLike(file: File, name: String): Either[Error, (String, String)] = for {
-    document <- JsoupBrowser().parseFile(file.toJava).asRight
-    elements <- extractMany(file, document, "div.documentableElement")
-    definition <- elements
-      .find(hasName(_, name))
-      .toRight(ParseError(file, "a.documentableName"))
-      .flatMap(extractTagFromElem(file, _, "div.cover > div.doc"))
-  } yield (name, definition)
-
-  private def hasName(elem: Element, name: String): Boolean = elem.tryExtract(text("a.documentableName")).contains(name)
 }
