@@ -3,6 +3,7 @@ package dev.atedeg
 import java.util.Locale.US
 
 import scala.util.Try
+
 import better.files.File
 import net.steppschuh.markdowngenerator.table.Table.ALIGN_LEFT
 import net.steppschuh.markdowngenerator.table.Table.Builder
