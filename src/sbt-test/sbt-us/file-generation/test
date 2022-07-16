@@ -2,4 +2,4 @@
 > doc
 $ mkdir customTarget
 > ubidoc
-$ exists customTarget/exampleUL.md
+$ exists customTarget/table1.md
