@@ -7,73 +7,79 @@ import org.scalatest.matchers.should.Matchers
 class EntitiesParserTest extends AnyFlatSpec with Matchers {
 
   "parse" should "fail with an empty string" in {
-    AllEntities.parse("") should matchPattern { case Left(_) => }
+    EntityParsing.parse("") should matchPattern { case Left(_) => }
   }
 
   it should "fail with a malformed string" in {
     val malformedString = "pages: [error]"
-    AllEntities.parse(malformedString) should matchPattern { case Left(_) => }
+    EntityParsing.parse(malformedString) should matchPattern { case Left(_) => }
   }
 
   it should "parse a correct string" in {
     val correctString =
       """
         |pages = [{
-        |        "l": "",
+        |        "l": "link",
         |        "e": false,
         |        "i": "",
         |        "n": "Type",
         |        "t": "",
-        |        "d": "",
+        |        "d": "package",
         |        "k": "type"
         |    },
         |{
-        |        "l": "",
+        |        "l": "link",
         |        "e": false,
         |        "i": "",
         |        "n": "Enum",
         |        "t": "",
-        |        "d": "",
+        |        "d": "package",
         |        "k": "enum"
         |    },
         |    {
-        |        "l": "",
+        |        "l": "link",
         |        "e": false,
         |        "i": "",
         |        "n": "Case",
         |        "t": "",
-        |        "d": "",
+        |        "d": "package",
         |        "k": "case"
         |    },
         |    {
-        |        "l": "",
+        |        "l": "link",
         |        "e": false,
         |        "i": "",
         |        "n": "Trait",
         |        "t": "",
-        |        "d": "",
+        |        "d": "package",
         |        "k": "trait"
         |    },
         |    {
-        |        "l": "",
+        |        "l": "link",
         |        "e": false,
         |        "i": "",
         |        "n": "Class",
         |        "t": "",
-        |        "d": "",
+        |        "d": "package",
         |        "k": "class"
         |    },
         |    {
-        |        "n": "ignore me",
-        |        "k": "package"
+        |        "l": "link",
+        |        "e": false,
+        |        "i": "",
+        |        "n": "Def",
+        |        "t": "",
+        |        "d": "package",
+        |        "k": "def"
         |    }];""".stripMargin
-    val expected: Set[IgnoredSelector] = Set(
-      IgnoredClass("Class"),
-      IgnoredEnum("Enum"),
-      IgnoredTrait("Trait"),
-      IgnoredEnumCase("Case"),
-      IgnoredType("Type"),
+    val expected: Set[Entity] = Set(
+      Entity(Class, "link", "Class", "package"),
+      Entity(Enum, "link", "Enum", "package"),
+      Entity(Trait, "link", "Trait", "package"),
+      Entity(Type, "link", "Type", "package"),
+      Entity(Case, "link", "Case", "package"),
+      Entity(Def, "link", "Def", "package"),
     )
-    AllEntities.parse(correctString) shouldBe Right(expected)
+    EntityParsing.parse(correctString) shouldBe Right(expected)
   }
 }

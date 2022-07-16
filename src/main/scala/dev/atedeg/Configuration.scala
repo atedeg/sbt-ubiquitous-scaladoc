@@ -41,6 +41,6 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
 }
 final case class BaseEntity(entityType: EntityType, name: String)
 final case class Configuration(ignored: Set[BaseEntity], tables: List[TableConfig])
-final case class TableConfig(name: String, termName: Option[String], defName: Option[String], rows: List[BaseEntity])
+final case class TableConfig(name: String, termName: Option[String], definitionName: Option[String], rows: List[BaseEntity])
 
 
