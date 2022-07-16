@@ -34,7 +34,7 @@ case object Def extends EntityType
 final case class Entity(entityType: EntityType, link: String, name: String, packageName: String) {
   def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
   def sanitizedLink: String = link.split('#').head
-  def entityId: Option[String] = link.split('#').lastOption
+  def entityId: Option[String] = link.split('#').lift(1)
 
   def isClassLike: Boolean = entityType match {
     case Class | Trait | Enum => true
