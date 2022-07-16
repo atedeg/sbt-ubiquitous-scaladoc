@@ -15,8 +15,10 @@ object EntityParsing {
 
   def readAllEntities(workingDir: File): Either[Error, Set[Entity]] = Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
 
-  private[atedeg] def parse(raw: String): Either[Error, Set[Entity]] =
-    parseJsonString(raw).leftMap(CirceParsingFailure).flatMap(parseJson)
+  private[atedeg] def parse(raw: String): Either[Error, Set[Entity]] = {
+    val sanitized = raw.replaceFirst("pages = ", "").replaceFirst(";", "")
+    parseJsonString(sanitized).leftMap(CirceParsingFailure).flatMap(parseJson)
+  }
 
   private def parseJson(json: Json): Either[Error, Set[Entity]] = {
     def build(maybeType: Option[EntityType], link: String, name: String, packageName: String): Option[Entity] =
@@ -30,5 +32,5 @@ object EntityParsing {
 
 object EntityConversion {
   def entityToRow(entity: Entity, baseDir: File, allEntities: Set[Entity]): Either[Error, Row] =
-    extractTermAndDefinition(baseDir / entity.sanitizedLink, entity, allEntities).map(Row(_))
+    extractTermAndDefinition(baseDir / entity.sanitizedLink, entity, allEntities).map(Row.from)
 }
