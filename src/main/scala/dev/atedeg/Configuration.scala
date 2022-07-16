@@ -10,6 +10,50 @@ import cats.implicits.*
 
 import Extensions.*
 
+sealed trait EntityType
+
+object EntityType {
+
+  def fromString(s: String): Option[EntityType] = s match {
+    case "class" => Some(Class)
+    case "trait" => Some(Trait)
+    case "enum" => Some(Enum)
+    case "type" => Some(Type)
+    case "case" => Some(Case)
+    case "def" => Some(Def)
+    case _ => None
+  }
+}
+case object Class extends EntityType
+case object Trait extends EntityType
+case object Enum extends EntityType
+case object Type extends EntityType
+case object Case extends EntityType
+case object Def extends EntityType
+
+final case class Entity(entityType: EntityType, link: String, name: String, packageName: String)
+
+object Entity {
+  private val entitiesFileName = "searchData.js"
+
+  private def allEntitiesFile(workingDir: File): File =
+    workingDir / "target" / "site" / "scripts" / entitiesFileName
+
+  def readAll(workingDir: File): Either[Error, Set[Entity]] = Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
+
+  private[atedeg] def parse(raw: String): Either[Error, Set[Entity]] =
+    parseJsonString(raw).leftMap(CirceParsingFailure).flatMap(parseJson)
+
+  private def parseJson(json: Json): Either[Error, Set[Entity]] = {
+    def build(maybeType: Option[EntityType], link: String, name: String, packageName: String): Option[Entity] =
+      maybeType.map(Entity(_, link, name, packageName))
+
+    implicit val decodeEntityType: Decoder[Option[EntityType]] = Decoder.decodeString.map(EntityType.fromString)
+    implicit val decodeEntity: Decoder[Option[Entity]] = Decoder.forProduct4("k", "l", "n", "d")(build)
+    json.as[Set[Option[Entity]]].map(_.dropNone).leftMap(CirceDecodingFailure)
+  }
+}
+
 sealed trait IgnoredSelector
 final case class IgnoredClass(className: String) extends IgnoredSelector
 final case class IgnoredTrait(traitName: String) extends IgnoredSelector
