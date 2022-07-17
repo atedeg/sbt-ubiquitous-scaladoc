@@ -7,7 +7,9 @@ final case class UbidocException(error: Error) extends Exception {
   override def toString: String = error.toString
 }
 
-sealed trait Error
+sealed trait Error {
+  override def toString: String = "Ubidoc error"
+}
 
 final case class EntityNotFound(baseEntity: BaseEntity) extends Error {
   override def toString: String = s"Could not find entity '$baseEntity'"
@@ -22,27 +24,19 @@ final case class FileNotFound(lookupDir: File, path: String) extends Error {
 }
 
 final case class ParseError(file: File, tag: String) extends Error {
-
-  override def toString: String =
-    s"Could not parse file '$file', missing tag '$tag'"
+  override def toString: String = s"Could not parse file '$file', missing tag '$tag'"
 }
 
 final case class AmbiguousName(name: String) extends Error {
-
-  override def toString: String =
-    s"More than one entity with the same name: '$name'"
+  override def toString: String = s"More than one entity with the same name: '$name'"
 }
 
 final case class OverlappingIgnoredAndConsidered(overlapping: Set[BaseEntity]) extends Error {
-
-  override def toString: String =
-    s"One of the tables specified one or more entities that also appear in the ignored list: $overlapping"
+  override def toString: String = s"One of the tables specified one or more entities that also appear in the ignored list: $overlapping"
 }
 
 final case class LeftoverEntities(leftovers: Set[BaseEntity]) extends Error {
-
-  override def toString: String =
-    s"There are one or more entities that are not considered nor ignored, maybe you forgot about those: $leftovers"
+  override def toString: String = s"There are one or more entities that are not considered nor ignored, maybe you forgot about those: $leftovers"
 }
 
 final case class ExternalError(error: Throwable) extends Error {

@@ -2,9 +2,10 @@ package dev.atedeg
 
 import better.files.File
 import cats.data.NonEmptyList
-import io.circe.{ Decoder, Json }
+import io.circe.{Decoder, Json}
 import io.circe.yaml.parser
-import cats.syntax.all._
+import cats.syntax.all.*
+import Extensions.*
 
 object ConfigurationParsing {
   private val configFile = ".ubidoc.yaml"
@@ -36,7 +37,7 @@ object ConfigurationValidation {
 
   private def lookupEntities(config: TableConfig, allEntities: Set[Entity]): Either[Error, List[Entity]] = {
     def lookup(baseEntity: BaseEntity): Either[Error, Entity] =
-      allEntities.find(_.toBaseEntity == baseEntity).toRight(EntityNotFound(baseEntity))
-    config.rows.traverse(lookup)
+      allEntities.find(_.toBaseEntity === baseEntity).toRight(EntityNotFound(baseEntity))
+    config.rows.traverseError(lookup)
   }
 }

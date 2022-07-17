@@ -8,7 +8,7 @@ import dev.atedeg.TableUtils.entitiesToRows
 
 import better.files.{ File, FileExtensions }
 import cats.implicits._
-
+import Extensions._
 import ConfigurationValidation._
 
 object Ubidoc {
@@ -22,10 +22,10 @@ object Ubidoc {
       val result = for {
         config <- readConfiguration(workingDir)
         allEntities <- readAllEntities(workingDir)
-        tables <- config.tables.traverse(toTable(_, allEntities))
+        tables <- config.tables.traverseError(toTable(_, allEntities))
         consideredEntities = tables.flatMap(_.rows).toSet
         _ <- checkConsistency(allEntities.map(_.toBaseEntity), consideredEntities.map(_.toBaseEntity), config.ignored)
-        tables <- tables.traverse(entitiesToRows(_, lookupDir, allEntities))
+        tables <- tables.traverseError(entitiesToRows(_, lookupDir, allEntities))
       } yield tables.foreach(_.serialize(targetDir))
       result match {
         case Left(err) => throw UbidocException(err)
@@ -41,9 +41,9 @@ object Ubidoc {
       val consideredAndIgnoredIntersection = considered.intersect(ignored)
       val leftoverEntities = allEntities.diff(considered).diff(ignored)
       if (consideredAndIgnoredIntersection.nonEmpty)
-        OverlappingIgnoredAndConsidered(consideredAndIgnoredIntersection).asLeft
-      else if (leftoverEntities.nonEmpty) LeftoverEntities(leftoverEntities).asLeft
-      else ().asRight
+        OverlappingIgnoredAndConsidered(consideredAndIgnoredIntersection).asLeft[Unit]
+      else if (leftoverEntities.nonEmpty) LeftoverEntities(leftoverEntities).asLeft[Unit]
+      else ().asRight[Error]
     }
 
   }

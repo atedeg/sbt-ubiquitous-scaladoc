@@ -11,7 +11,7 @@ object HtmlParsing {
 
   def extractTermAndDefinition(file: File, entity: Entity, allEntities: Set[Entity]): Either[Error, (String, String)] =
     for {
-      document <- JsoupBrowser().parseFile(file.toJava).asRight
+      document <- JsoupBrowser().parseFile(file.toJava).asRight[Error]
       doc <- extractDoc(file, document, entity, allEntities)
     } yield (entity.name, doc)
 
@@ -33,14 +33,14 @@ object HtmlParsing {
   ): Either[Error, String] =
     doc.tryExtract(element(tag)).map(_.childNodes).toRight(ParseError(file, tag)).flatMap(toMarkdown(_, allEntities))
 
-  private def toMarkdown(es: Iterable[Node], allEntities: Set[Entity]): Either[Error, String] = {
-    def isLink(e: Element): Boolean = e.tagName == "a"
+  private def toMarkdown(elems: Iterable[Node], allEntities: Set[Entity]): Either[Error, String] = {
+    def isLink(e: Element): Boolean = e.tagName === "a"
     def toMarkdownLink(e: Element) = lookupLinkFor(extractName(e)).map(l => s"[${e.text}]($l)")
     def extractName(e: Element): String = e.attr("href").replace(".html", "").split('$').last.split("/").last
     def lookupLinkFor(name: String): Either[Error, String] =
-      allEntities.find(_.name == name).map("../" + _.link).toRight(MissingLink(name))
+      allEntities.find(_.name === name).map("../" + _.link).toRight(MissingLink(name))
 
-    es.foldLeft("".asRight[Error]) { (acc, elem) =>
+    elems.foldLeft("".asRight[Error]) { (acc, elem) =>
       elem match {
         case TextNode(s) => acc.map(_ + s)
         case ElementNode(e) if isLink(e) =>

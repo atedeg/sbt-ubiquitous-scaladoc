@@ -5,6 +5,7 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Throw, Wart.Recursion)
 ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Nothing, Wart.Equals, Wart.Throw, Wart.SizeIs, Wart.Option2Iterable, Wart.Recursion)
 ThisBuild / developers := List(
   Developer(
