@@ -32,11 +32,15 @@ final case class AmbiguousName(name: String) extends Error {
 }
 
 final case class OverlappingIgnoredAndConsidered(overlapping: Set[BaseEntity]) extends Error {
-  override def toString: String = s"One of the tables specified one or more entities that also appear in the ignored list: $overlapping"
+
+  override def toString: String =
+    s"One of the tables specified one or more entities that also appear in the ignored list: $overlapping"
 }
 
 final case class LeftoverEntities(leftovers: Set[BaseEntity]) extends Error {
-  override def toString: String = s"There are one or more entities that are not considered nor ignored, maybe you forgot about those: $leftovers"
+
+  override def toString: String =
+    s"There are one or more entities that are not considered nor ignored, maybe you forgot about those: $leftovers"
 }
 
 final case class ExternalError(error: Throwable) extends Error {
