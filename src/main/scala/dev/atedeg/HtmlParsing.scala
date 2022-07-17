@@ -9,29 +9,18 @@ import cats.syntax.all._
 
 object HtmlParsing {
 
-  def extractTermAndDefinition(file: File, entity: Entity, allEntities: Set[Entity]): Either[Error, (String, String)] =
-    for {
-      document <- JsoupBrowser().parseFile(file.toJava).asRight[Error]
-      doc <- extractDoc(file, document, entity, allEntities)
-    } yield (entity.name, doc)
-
-  def extractDoc(
+  def extractTermAndDefinition(
       file: File,
-      document: Browser#DocumentType,
       entity: Entity,
       allEntities: Set[Entity],
-  ): Either[Error, String] = {
-    val searchQuery = s"${entity.entityId.map("div#" + _ + " ").getOrElse("")}div.cover > div.doc"
-    extractTagFromDocument(file, document, searchQuery, allEntities)
+  ): Either[Error, (String, String)] = {
+    val document = JsoupBrowser().parseFile(file.toJava)
+    val docQuery = s"${entity.entityId.map("div#" + _ + " ").getOrElse("")}div.cover > div.doc"
+    extractTag(file, document, docQuery, allEntities).map((entity.name, _))
   }
 
-  private def extractTagFromDocument(
-      file: File,
-      doc: Browser#DocumentType,
-      tag: String,
-      allEntities: Set[Entity],
-  ): Either[Error, String] =
-    doc.tryExtract(element(tag)).map(_.childNodes).toRight(ParseError(file, tag)).flatMap(toMarkdown(_, allEntities))
+  private def extractTag(file: File, doc: Browser#DocumentType, tag: String, all: Set[Entity]): Either[Error, String] =
+    doc.tryExtract(element(tag)).map(_.childNodes).toRight(ParseError(file, tag)).flatMap(toMarkdown(_, all))
 
   private def toMarkdown(elems: Iterable[Node], allEntities: Set[Entity]): Either[Error, String] = {
     def isLink(elem: Element) = elem.tagName === "a"

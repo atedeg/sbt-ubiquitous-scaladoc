@@ -1,6 +1,7 @@
 package dev.atedeg
 
 import scala.language.higherKinds
+import scala.util.Try
 
 import better.files.File
 import cats.Traverse
@@ -22,8 +23,8 @@ object Extensions {
     def dropNone: Set[A] = s.collect { case Some(a) => a }
   }
 
-  implicit class BetterFile(val f: File) {
-    def isHtmlFile: Boolean = f.extension.contains(".html")
-    def listHtmlFiles: Iterator[File] = f.listRecursively.filter(_.isHtmlFile)
+  implicit class BetterFile(val file: File) {
+    def stringContent: Either[Error, String] = Try(file.contentAsString).toEither.leftMap(ExternalError)
+    def parseWith[A](parser: String => Either[Error, A]): Either[Error, A] = file.stringContent.flatMap(parser)
   }
 }

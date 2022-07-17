@@ -19,16 +19,8 @@ final case class MissingLink(name: String) extends Error {
   override def toString: String = s"Could not find link for entity '$name'"
 }
 
-final case class FileNotFound(lookupDir: File, path: String) extends Error {
-  override def toString: String = s"Could not find file '$path' in directory '${lookupDir.pathAsString}'"
-}
-
 final case class ParseError(file: File, tag: String) extends Error {
   override def toString: String = s"Could not parse file '$file', missing tag '$tag'"
-}
-
-final case class AmbiguousName(name: String) extends Error {
-  override def toString: String = s"More than one entity with the same name: '$name'"
 }
 
 final case class OverlappingIgnoredAndConsidered(overlapping: Set[BaseEntity]) extends Error {
