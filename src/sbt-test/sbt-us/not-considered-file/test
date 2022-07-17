@@ -1,0 +1,4 @@
+# should fail since there are leftover files
+> doc
+$ mkdir customTarget
+-> ubidoc
