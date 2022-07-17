@@ -22,7 +22,7 @@ object Ubidoc {
     def ubiquitousScaladocTask(lookupDir: File, targetDir: File, workingDir: File): Unit = {
       val result = for {
         config <- readConfiguration(workingDir)
-        allEntities <- readAllEntities(workingDir)
+        allEntities <- readAllEntities(lookupDir)
         tables <- config.tables.traverseError(toTable(_, allEntities))
         consideredEntities = tables.flatMap(_.rows).toSet
         _ <- checkConsistency(allEntities.map(_.toBaseEntity), consideredEntities.map(_.toBaseEntity), config.ignored)
