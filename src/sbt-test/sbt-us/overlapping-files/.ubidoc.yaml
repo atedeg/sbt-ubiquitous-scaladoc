@@ -1,0 +1,9 @@
+tables:
+  - name: "table1"
+    termName: "Term"
+    definitionName: "Definition"
+    rows:
+      - class: "Example"
+      - class: "Example2"
+ignored:
+  - class: "Example2"
