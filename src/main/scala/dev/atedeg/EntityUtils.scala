@@ -27,7 +27,7 @@ object EntityParsing {
     def build(maybeType: Option[EntityType], link: String, name: String, packageName: String): Option[Entity] =
       maybeType.map(Entity(_, link, name, packageName))
 
-    implicit val decodeEntityType: Decoder[Option[EntityType]] = Decoder.decodeString.map(EntityType.fromString)
+    implicit val decodeEntityType: Decoder[Option[EntityType]] = Decoder.decodeString.map(EntityType.read)
     implicit val decodeEntity: Decoder[Option[Entity]] = Decoder.forProduct4("k", "l", "n", "d")(build)
     json.as[Set[Option[Entity]]].map(_.dropNone).leftMap(CirceDecodingFailure)
   }

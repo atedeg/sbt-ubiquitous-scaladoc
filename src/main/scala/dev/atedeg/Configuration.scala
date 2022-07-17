@@ -1,28 +1,21 @@
 package dev.atedeg
 
 sealed trait EntityType {
-
-  override def toString: String = this match {
-    case Class => "class"
-    case Trait => "trait"
-    case Enum => "enum"
-    case Type => "type"
-    case Case => "case"
-    case Def => "def"
-  }
+  override def toString: String = EntityType.show(this)
 }
 
 object EntityType {
-
-  def fromString(s: String): Option[EntityType] = s match {
-    case "class" => Some(Class)
-    case "trait" => Some(Trait)
-    case "enum" => Some(Enum)
-    case "type" => Some(Type)
-    case "case" => Some(Case)
-    case "def" => Some(Def)
-    case _ => None
-  }
+  private val typeToString: Map[EntityType, String] = Map(
+    Class -> "class",
+    Trait -> "trait",
+    Enum -> "enum",
+    Type -> "type",
+    Case -> "case",
+    Def -> "def",
+  )
+  private val stringToType: Map[String, EntityType] = typeToString.map(_.swap)
+  def show(entityType: EntityType): String = typeToString.getOrElse(entityType, "")
+  def read(s: String): Option[EntityType] = stringToType.get(s)
 }
 case object Class extends EntityType
 case object Trait extends EntityType
