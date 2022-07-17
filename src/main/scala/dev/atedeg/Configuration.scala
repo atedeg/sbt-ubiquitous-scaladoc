@@ -5,6 +5,7 @@ sealed trait EntityType {
 }
 
 object EntityType {
+
   private val typeToString: Map[EntityType, String] = Map(
     Class -> "class",
     Trait -> "trait",
