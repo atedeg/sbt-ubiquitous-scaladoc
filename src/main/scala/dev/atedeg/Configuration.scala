@@ -29,11 +29,6 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
   def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
   def sanitizedLink: String = link.split('#').head
   def entityId: Option[String] = link.split('#').lift(1)
-
-  def isClassLike: Boolean = entityType match {
-    case Class | Trait | Enum => true
-    case Type | Case | Def => false
-  }
 }
 final case class BaseEntity(entityType: EntityType, name: String)
 final case class Configuration(ignored: Set[BaseEntity], tables: List[TableConfig])

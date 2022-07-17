@@ -11,8 +11,7 @@ import Extensions._
 object ConfigurationParsing {
   private val configFile = ".ubidoc.yaml"
 
-  def readConfiguration(workingDir: File): Either[Error, Configuration] =
-    Utils.parseFileWith(workingDir / configFile)(parse)
+  def readConfiguration(workingDir: File): Either[Error, Configuration] = (workingDir / configFile).parseWith(parse)
 
   private[atedeg] def parse(raw: String): Either[Error, Configuration] =
     parser.parse(raw).leftMap[Error](CirceParsingFailure).flatMap(parseJson)

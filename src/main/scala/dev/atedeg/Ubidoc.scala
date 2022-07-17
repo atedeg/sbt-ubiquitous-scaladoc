@@ -39,11 +39,11 @@ object Ubidoc {
         considered: Set[BaseEntity],
         ignored: Set[BaseEntity],
     ): Either[Error, Unit] = {
-      val consideredAndIgnoredIntersection = considered.intersect(ignored)
-      val leftoverEntities = allEntities.diff(considered).diff(ignored)
-      if (consideredAndIgnoredIntersection.nonEmpty)
-        OverlappingIgnoredAndConsidered(consideredAndIgnoredIntersection).asLeft[Unit]
-      else if (leftoverEntities.nonEmpty) LeftoverEntities(leftoverEntities).asLeft[Unit]
+      val consideredAndIgnored = considered.intersect(ignored)
+      val leftovers = allEntities.diff(considered).diff(ignored)
+      if (consideredAndIgnored.nonEmpty)
+        OverlappingIgnoredAndConsidered(consideredAndIgnored).asLeft[Unit]
+      else if (leftovers.nonEmpty) LeftoverEntities(leftovers).asLeft[Unit]
       else ().asRight[Error]
     }
 
