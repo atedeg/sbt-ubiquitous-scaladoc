@@ -34,25 +34,15 @@ object HtmlParsing {
     doc.tryExtract(element(tag)).map(_.childNodes).toRight(ParseError(file, tag)).flatMap(toMarkdown(_, allEntities))
 
   private def toMarkdown(elems: Iterable[Node], allEntities: Set[Entity]): Either[Error, String] = {
-    def isLink(e: Element): Boolean = e.tagName === "a"
-    def toMarkdownLink(e: Element) = lookupLinkFor(extractName(e)).map(l => s"[${e.text}]($l)")
-    def extractName(e: Element): String = e.attr("href").replace(".html", "").split('$').last.split("/").last
-    def lookupLinkFor(name: String): Either[Error, String] =
-      allEntities.find(_.name === name).map("../" + _.link).toRight(MissingLink(name))
-
+    def isLink(elem: Element) = elem.tagName === "a"
+    def toMarkdownLink(elem: Element) = lookupLinkFor(extractName(elem)).map(l => s"[${elem.text}]($l)")
+    def lookupLinkFor(name: String) = allEntities.find(_.name === name).map("../" + _.link).toRight(MissingLink(name))
+    def extractName(elem: Element) = elem.attr("href").replace(".html", "").split('$').last.split("/").last
     elems.foldLeft("".asRight[Error]) { (acc, elem) =>
       elem match {
         case TextNode(s) => acc.map(_ + s)
-        case ElementNode(e) if isLink(e) =>
-          for {
-            a <- acc
-            l <- toMarkdownLink(e)
-          } yield a + l
-        case ElementNode(e) =>
-          for {
-            a <- acc
-            m <- toMarkdown(e.childNodes, allEntities)
-          } yield a + m
+        case ElementNode(e) if isLink(e) => acc.flatMap(a => toMarkdownLink(e).map(a + _))
+        case ElementNode(e) => acc.flatMap(a => toMarkdown(e.childNodes, allEntities).map(a + _))
       }
     }
   }
