@@ -15,8 +15,7 @@ object EntityParsing {
   private def allEntitiesFile(workingDir: File): File =
     workingDir / "target" / "site" / "scripts" / entitiesFileName
 
-  def readAllEntities(workingDir: File): Either[Error, Set[Entity]] =
-    Utils.parseFileWith(allEntitiesFile(workingDir))(parse)
+  def readAllEntities(workingDir: File): Either[Error, Set[Entity]] = allEntitiesFile(workingDir).parseWith(parse)
 
   private[atedeg] def parse(raw: String): Either[Error, Set[Entity]] = {
     val sanitized = raw.replaceFirst("pages = ", "").replaceFirst(";", "")
