@@ -4,7 +4,7 @@ import java.io.{ File => JFile }
 
 import dev.atedeg.ConfigurationParsing.readConfiguration
 import dev.atedeg.EntityParsing.readAllEntities
-import dev.atedeg.TableUtils.entitiesToRows
+import dev.atedeg.TableUtils.{ entitiesToRows, serialize }
 
 import better.files.{ File, FileExtensions }
 import cats.implicits._
@@ -27,7 +27,7 @@ object Ubidoc {
         consideredEntities = tables.flatMap(_.rows).toSet
         _ <- checkConsistency(allEntities.map(_.toBaseEntity), consideredEntities.map(_.toBaseEntity), config.ignored)
         tables <- tables.traverseError(entitiesToRows(_, lookupDir, allEntities))
-      } yield tables.foreach(_.serialize(targetDir))
+      } yield tables.foreach(serialize(_, targetDir))
       result match {
         case Left(err) => throw UbidocException(err)
         case Right(()) => println("Tables generated!")
