@@ -1,0 +1,4 @@
+# should fail since there are overlapping elements in ignored e considered files
+> doc
+$ mkdir customTarget
+-> ubidoc
