@@ -1,9 +1,10 @@
 package dev.atedeg
 
+import scala.language.higherKinds
+
 import better.files.File
 import cats.Traverse
 import cats.syntax.all._
-import scala.language.higherKinds
 
 object Extensions {
 
