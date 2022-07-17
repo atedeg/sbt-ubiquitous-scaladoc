@@ -8,6 +8,7 @@ import dev.atedeg.TableUtils.entitiesToRows
 
 import better.files.{ File, FileExtensions }
 import cats.implicits._
+
 import Extensions._
 import ConfigurationValidation._
 
