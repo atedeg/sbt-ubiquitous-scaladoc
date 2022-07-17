@@ -2,8 +2,11 @@ package dev.atedeg
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import cats.syntax.all._
 
-@SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+@SuppressWarnings(Array(
+  "org.wartremover.warts.NonUnitStatements",
+  "org.wartremover.warts.Any"))
 class EntitiesParserTest extends AnyFlatSpec with Matchers {
 
   "parse" should "fail with an empty string" in {
@@ -80,6 +83,6 @@ class EntitiesParserTest extends AnyFlatSpec with Matchers {
       Entity(Case, "link", "Case", "package"),
       Entity(Def, "link", "Def", "package"),
     )
-    EntityParsing.parse(correctString) shouldBe Right(expected)
+    EntityParsing.parse(correctString) shouldBe expected.asRight[Error]
   }
 }
