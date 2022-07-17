@@ -43,10 +43,6 @@ lazy val root = project
   .settings(
     name := "sbt-ubiquitous-scaladoc",
     sbtPlugin := true,
-    scriptedLaunchOpts := {
-      scriptedLaunchOpts.value ++
-        Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
-    },
     scriptedBufferLog := false,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
