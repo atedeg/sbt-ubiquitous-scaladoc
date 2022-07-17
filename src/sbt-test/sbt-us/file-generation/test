@@ -1,5 +1,0 @@
-# check if the markdown file gets created in the target folder, with the provided fileNameSuffix
-> doc
-$ mkdir customTarget
-> ubidoc
-$ exists customTarget/table1.md
