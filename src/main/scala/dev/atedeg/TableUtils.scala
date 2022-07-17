@@ -1,7 +1,9 @@
 package dev.atedeg
 
 import dev.atedeg.EntityConversion.entityToRow
+
 import better.files.File
+
 import Extensions._
 
 object TableUtils {
