@@ -1,5 +1,7 @@
 package dev.atedeg
 
+import cats.Eq
+
 sealed trait EntityType {
   override def toString: String = EntityType.show(this)
 }
@@ -39,3 +41,7 @@ final case class TableConfig(
     definitionName: Option[String],
     rows: List[BaseEntity],
 )
+
+object BaseEntity {
+  implicit val eqBaseEntity: Eq[BaseEntity] = Eq.fromUniversalEquals
+}
