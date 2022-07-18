@@ -5,6 +5,12 @@ import cats.Eq
 sealed trait EntityType {
   override def toString: String = EntityType.show(this)
 }
+case object Class extends EntityType
+case object Trait extends EntityType
+case object Enum extends EntityType
+case object Type extends EntityType
+case object Case extends EntityType
+case object Def extends EntityType
 
 object EntityType {
 
@@ -20,12 +26,6 @@ object EntityType {
   def show(entityType: EntityType): String = typeToString.getOrElse(entityType, "")
   def read(s: String): Option[EntityType] = stringToType.get(s)
 }
-case object Class extends EntityType
-case object Trait extends EntityType
-case object Enum extends EntityType
-case object Type extends EntityType
-case object Case extends EntityType
-case object Def extends EntityType
 
 final case class Entity(entityType: EntityType, link: String, name: String, packageName: String) {
   def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
