@@ -8,9 +8,16 @@ import cats.syntax.all._
 import Extensions._
 
 object ConfigurationParsing {
-  private val configFile = ".ubidoc.yaml"
+  private val yamlConfigFile = ".ubidoc.yaml"
+  private val ymlConfigFile = ".ubidoc.yml"
 
-  def readConfiguration(workingDir: File): Either[Error, Configuration] = (workingDir / configFile).parseWith(parse)
+  def readConfiguration(workingDir: File): Either[Error, Configuration] = {
+    (workingDir / yamlConfigFile).parseWith(parse) match {
+      case res@Right(_) => res
+      case Left(ExternalError(_)) => (workingDir / ymlConfigFile).parseWith(parse)
+      case err@Left(_) => err
+    }
+  }
 
   private[atedeg] def parse(raw: String): Either[Error, Configuration] =
     parser.parse(raw).leftMap[Error](CirceParsingFailure).flatMap(parseJson)
