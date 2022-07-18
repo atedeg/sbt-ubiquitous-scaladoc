@@ -1,7 +1,7 @@
 package dev.atedeg
 
-import cats.{Eq, Order}
-import cats.data.{NonEmptyList, NonEmptyMap}
+import cats.{ Eq, Order }
+import cats.data.{ NonEmptyList, NonEmptyMap }
 
 sealed trait EntityType {
   override def toString: String = EntityType.show(this)
