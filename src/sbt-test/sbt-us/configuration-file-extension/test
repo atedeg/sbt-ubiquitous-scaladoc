@@ -1,0 +1,6 @@
+# check if the file is generated and its content is right
+> doc
+$ mkdir customTarget
+> ubidoc
+$ exists customTarget/table1.md
+> checkContent
