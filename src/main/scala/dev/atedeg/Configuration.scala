@@ -1,6 +1,7 @@
 package dev.atedeg
 
-import cats.Eq
+import cats.{Eq, Order}
+import cats.data.{NonEmptyList, NonEmptyMap}
 
 sealed trait EntityType {
   override def toString: String = EntityType.show(this)
@@ -13,8 +14,9 @@ case object Case extends EntityType
 case object Def extends EntityType
 
 object EntityType {
+  implicit val ordEntityType: Order[EntityType] = Order.from(_.hashCode - _.hashCode)
 
-  private val typeToString: Map[EntityType, String] = Map(
+  private val typeToString = NonEmptyMap.of[EntityType, String](
     Class -> "class",
     Trait -> "trait",
     Enum -> "enum",
@@ -22,9 +24,10 @@ object EntityType {
     Case -> "case",
     Def -> "def",
   )
-  private val stringToType: Map[String, EntityType] = typeToString.map(_.swap)
-  def show(entityType: EntityType): String = typeToString.getOrElse(entityType, "")
-  def read(s: String): Option[EntityType] = stringToType.get(s)
+  private val stringToType = typeToString.mapBoth((k, v) => (v, k))
+  def cases: NonEmptyList[EntityType] = typeToString.keys.toNonEmptyList
+  def show(entityType: EntityType): String = typeToString(entityType).getOrElse("")
+  def read(s: String): Option[EntityType] = stringToType(s)
 }
 
 final case class Entity(entityType: EntityType, link: String, name: String, packageName: String) {
@@ -43,5 +46,5 @@ final case class TableConfig(
 )
 
 object BaseEntity {
-  implicit val eqBaseEntity: Eq[BaseEntity] = Eq.fromUniversalEquals
+  implicit val eqBaseEntity: Eq[BaseEntity] = Eq.fromUniversalEquals[BaseEntity]
 }

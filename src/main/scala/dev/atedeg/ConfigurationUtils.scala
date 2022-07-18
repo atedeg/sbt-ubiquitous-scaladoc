@@ -1,7 +1,6 @@
 package dev.atedeg
 
 import better.files.File
-import cats.data.NonEmptyList
 import io.circe.{ Decoder, Json }
 import io.circe.yaml.parser
 import cats.syntax.all._
@@ -18,8 +17,7 @@ object ConfigurationParsing {
 
   private def parseJson(json: Json): Either[CirceDecodingFailure, Configuration] = {
     import io.circe.generic.auto._
-    implicit val decodeEntity: Decoder[BaseEntity] = NonEmptyList
-      .of[EntityType](Class, Trait, Enum, Case, Type, Def)
+    implicit val decodeEntity: Decoder[BaseEntity] = EntityType.cases
       .map(t => (t.toString, BaseEntity(t, _)))
       .map(entry => Decoder.forProduct1(entry._1)(entry._2))
       .reduceLeft(_ or _)
