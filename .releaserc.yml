@@ -1,25 +1,29 @@
 tagFormat: 'v${version}'
-branches:
-  - 'main'
-  - name: 'beta'
-    prerelease: true
-  - name: 'alpha'
-    prerelease: true
-
 plugins:
   - - '@semantic-release/commit-analyzer'
     - preset: conventionalcommits
   - '@semantic-release/release-notes-generator'
   - '@semantic-release/changelog'
+  - - '@google/semantic-release-replace-plugin'
+    - replacements:
+        - files:
+            - build.sbt
+          from: 'version := .*'
+          to: 'version := "${nextRelease.version}",'
+          results:
+            - file: build.sbt
+              hasChanged: true
+              numMatches: 1
+              numReplacements: 1
+          countMatches: true
   - - '@semantic-release/exec'
     - publishCmd: |
-        export CI_COMMIT_TAG="true"
-        sbt ci-release
-      failCmd: | 
-        git push origin --delete ${nextRelease.version}
-        git reset --hard HEAD~1
-        git push --force
+        sbt +publishSigned || exit 1
+        sbt sonatypeBundleRelease || exit 2
+        git tag -a -f ${nextRelease.version} ${nextRelease.version} -F CHANGELOG.md        
+        git push --force origin ${nextRelease.version}
   - - '@semantic-release/git'
     - assets:
+        - build.sbt
         - CHANGELOG.md
   - '@semantic-release/github'
