@@ -6,6 +6,7 @@ ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scala
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
 ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Throw, Wart.Recursion)
+
 ThisBuild / developers := List(
   Developer(
     "giacomocavalieri",
@@ -26,8 +27,6 @@ ThisBuild / developers := List(
     url("https://github.com/vitlinda"),
   ),
 )
-ThisBuild / publishTo := sonatypePublishToBundle.value
-ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 
 resolvers += "jitpack" at "https://jitpack.io"
 
@@ -54,8 +53,11 @@ lazy val root = project
       "io.circe" %% "circe-generic" % "0.14.2",
       "io.circe" %% "circe-parser" % "0.14.2",
       "org.typelevel" %% "cats-core" % "2.7.0",
-      "org.scalatest" %% "scalatest" % "3.2.12" % "test"
+      "org.scalatest" %% "scalatest" % "3.2.12" % "test",
     ),
+    publishTo := sonatypePublishToBundle.value,
+    sonatypeCredentialHost := "s01.oss.sonatype.org",
+    sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
     Global / onLoad := {
       val old = (Global / onLoad).value
       startupTransition compose old
