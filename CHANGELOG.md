@@ -1,3 +1,10 @@
+# [1.0.0-beta.3](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2022-07-20)
+
+
+### Features
+
+* no longer fail when there are ignored entities ([290327e](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/290327ee66aaebb703690bf82a89d835d721bb10))
+
 # [1.0.0-beta.2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2022-07-19)
 
 
