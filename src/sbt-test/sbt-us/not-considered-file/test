@@ -1,4 +1,4 @@
-# should fail since there are leftover elements
+# should not fail if there are leftover elements
 > doc
 $ mkdir customTarget
--> ubidoc
+> ubidoc
