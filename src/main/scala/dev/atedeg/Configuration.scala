@@ -35,7 +35,9 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
   def sanitizedLink: String = link.split('#').head
   def entityId: Option[String] = link.split('#').lift(1)
 }
-final case class BaseEntity(entityType: EntityType, name: String)
+final case class BaseEntity(entityType: EntityType, name: String) {
+  override def toString: String = s"$entityType: $name"
+}
 final case class Configuration(ignored: Set[BaseEntity], tables: List[TableConfig])
 
 final case class TableConfig(

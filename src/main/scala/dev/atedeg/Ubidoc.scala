@@ -1,25 +1,23 @@
 package dev.atedeg
 
-import java.io.{ File => JFile }
-
+import java.io.File as JFile
 import dev.atedeg.ConfigurationParsing.readConfiguration
 import dev.atedeg.EntityParsing.readAllEntities
-import dev.atedeg.TableUtils.{ entitiesToRows, serialize }
-
-import better.files.{ File, FileExtensions }
-import cats.implicits._
-
-import Extensions._
-import ConfigurationValidation._
+import dev.atedeg.TableUtils.{entitiesToRows, serialize}
+import better.files.{File, FileExtensions}
+import cats.implicits.*
+import Extensions.*
+import ConfigurationValidation.*
+import sbt.internal.util.ManagedLogger
 
 object Ubidoc {
 
-  def apply(lookupDir: JFile, targetDir: JFile, workingDir: JFile): Unit =
-    Internals.ubiquitousScaladocTask(lookupDir.toScala, targetDir.toScala, workingDir.toScala)
+  def apply(lookupDir: JFile, targetDir: JFile, workingDir: JFile, logger: ManagedLogger): Unit =
+    Internals.ubiquitousScaladocTask(lookupDir.toScala, targetDir.toScala, workingDir.toScala, logger)
 
   private object Internals {
 
-    def ubiquitousScaladocTask(lookupDir: File, targetDir: File, workingDir: File): Unit = {
+    def ubiquitousScaladocTask(lookupDir: File, targetDir: File, workingDir: File, logger: ManagedLogger): Unit = {
       val result = for {
         config <- readConfiguration(workingDir)
         allEntities <- readAllEntities(lookupDir)
@@ -29,8 +27,9 @@ object Ubidoc {
         tables <- tables.traverseError(entitiesToRows(_, lookupDir, allEntities))
       } yield tables.foreach(serialize(_, targetDir))
       result match {
+        case Left(l@LeftoverEntities(_)) => logger.warn(l.toString)
         case Left(err) => throw UbidocException(err)
-        case Right(()) => println("Tables generated!")
+        case Right(()) => logger.success("Tables generated")
       }
     }
 
