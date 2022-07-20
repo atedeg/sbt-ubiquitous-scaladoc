@@ -1,7 +1,7 @@
 package dev.atedeg
 
-import sbt.Keys.{baseDirectory, streams}
-import sbt.{AutoPlugin, Setting, Task}
+import sbt.Keys.{ baseDirectory, streams }
+import sbt.{ AutoPlugin, Setting, Task }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Nothing"))
 object UbiquitousScaladocPlugin extends AutoPlugin {
