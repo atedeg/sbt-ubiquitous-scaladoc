@@ -30,9 +30,9 @@ final case class OverlappingIgnoredAndConsidered(overlapping: Set[BaseEntity]) e
 }
 
 final case class LeftoverEntities(leftovers: Set[BaseEntity]) extends Error {
-
+  private val pretty: String = leftovers.map("  - " + _.toString).mkString("\n")
   override def toString: String =
-    s"There are one or more entities that are not considered nor ignored, maybe you forgot about those: $leftovers"
+    s"There are one or more entities that are not considered nor ignored, maybe you forgot about those: $pretty"
 }
 
 final case class ExternalError(error: Throwable) extends Error {
