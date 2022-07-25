@@ -1,3 +1,7 @@
+[![Build test and deploy](https://github.com/atedeg/sbt-ubiquitous-scaladoc/actions/workflows/ci.yml/badge.svg)](https://github.com/atedeg/sbt-ubiquitous-scaladoc/actions/workflows/ci.yml)
+[![semantic-release: conventional-commits](https://img.shields.io/badge/semantic--release-conventional_commits-e10098?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # ubiquitous-scaladoc
 
 ## Usage  
