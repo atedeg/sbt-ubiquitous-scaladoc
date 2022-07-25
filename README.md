@@ -52,3 +52,7 @@ If, by the end of the process that generates all tables there are leftover entit
 the plugin issues a warning listing all those entities. This is used as a sanity check since one may forget to include an important domain
 concept. To avoid having any warning one must explicitly specify which entities have to be ignored by adding their specifiers to the 
 `ignored` list.
+
+
+## Working example
+Head to [mdm](https://github.com/atedeg/mdm) to see a working example of the plugin.
