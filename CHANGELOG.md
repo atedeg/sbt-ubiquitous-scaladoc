@@ -1,3 +1,10 @@
+# [1.0.0-beta.4](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2022-07-26)
+
+
+### Bug Fixes
+
+* removed jitpack resolver for markdown generator library ([b519ce1](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/b519ce1e3979068b3958f50c1e69cfd9bef013e1))
+
 # [1.0.0-beta.3](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.2...v1.0.0-beta.3) (2022-07-20)
 
 
