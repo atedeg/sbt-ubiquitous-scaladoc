@@ -28,8 +28,6 @@ ThisBuild / developers := List(
   ),
 )
 
-resolvers += "jitpack" at "https://jitpack.io"
-
 lazy val startupTransition: State => State = { s: State =>
   "conventionalCommits" :: s
 }
@@ -47,7 +45,7 @@ lazy val root = project
     scalacOptions ++= Seq("-Ywarn-unused-import", "-Ypartial-unification"),
     libraryDependencies ++= Seq(
       "net.ruippeixotog" %% "scala-scraper" % "2.2.1",
-      "com.github.Steppschuh" %% "Java-Markdown-Generator" % "1.3.2",
+      "net.steppschuh.markdowngenerator" % "markdowngenerator" % "1.3.1.1",
       "com.github.pathikrit" %% "better-files" % "3.9.1",
       "io.circe" %% "circe-yaml" % "0.14.1",
       "io.circe" %% "circe-core" % "0.14.2",
