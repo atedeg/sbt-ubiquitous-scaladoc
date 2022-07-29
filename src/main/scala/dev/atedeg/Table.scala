@@ -10,5 +10,5 @@ object Row {
   private def normalizeName(name: String): String =
     name.split("(?=\\p{Upper})").toList.map(_.toLowerCase(US)).mkString(" ").capitalize
 
-  def from(termDefinition: (String, String)): Row = Row(normalizeName(termDefinition._1), termDefinition._2)
+  def from(term: String, definition: String): Row = Row(normalizeName(term), definition)
 }

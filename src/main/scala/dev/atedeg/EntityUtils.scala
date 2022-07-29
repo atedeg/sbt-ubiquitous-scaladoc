@@ -32,6 +32,8 @@ object EntityParsing {
 
 object EntityConversion {
 
-  def entityToRow(entity: Entity, baseDir: File, allEntities: Set[Entity]): Either[Error, Row] =
-    extractTermAndDefinition(baseDir / entity.sanitizedLink, entity, allEntities).map(Row.from)
+  def entityToRow(namedEntity: (Option[String], Entity), baseDir: File, allEntities: Set[Entity]): Either[Error, Row] =
+    extractTermAndDefinition(baseDir / namedEntity._2.sanitizedLink, namedEntity._2, allEntities).map {
+      case (term, definition) => Row.from(namedEntity._1.getOrElse(term), definition)
+    }
 }

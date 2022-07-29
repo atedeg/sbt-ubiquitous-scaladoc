@@ -28,31 +28,43 @@ object ConfigurationParsing {
       .map(t => (t.toString, BaseEntity(t, _)))
       .map(entry => Decoder.forProduct1(entry._1)(entry._2))
       .reduceLeft(_ or _)
+    implicit val decodeNamedEntity: Decoder[NamedBaseEntity] = EntityType.cases
+      .map(t => (t.toString, NamedBaseEntity(t, _, _)))
+      .map(entry => Decoder.forProduct2(entry._1, "name")(entry._2))
+      .reduceLeft(_ or _)
     json.as[Configuration].leftMap(CirceDecodingFailure)
   }
 }
 
 object ConfigurationValidation {
 
-  def toTable(tableConfig: TableConfig, allEntities: Set[Entity]): Either[Error, Table[Entity]] = for {
-    entities <- lookupEntities(tableConfig, allEntities)
-    termName = tableConfig.termName.getOrElse("Term")
-    definitionName = tableConfig.definitionName.getOrElse("Definition")
-  } yield Table(tableConfig.name, termName, definitionName, entities)
+  def toTable(tableConfig: TableConfig, allEntities: Set[Entity]): Either[Error, Table[(Option[String], Entity)]] =
+    for {
+      entities <- lookupEntities(tableConfig, allEntities)
+      termName = tableConfig.termName.getOrElse("Term")
+      definitionName = tableConfig.definitionName.getOrElse("Definition")
+    } yield Table(tableConfig.name, termName, definitionName, entities)
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  private def lookupEntities(config: TableConfig, allEntities: Set[Entity]): Either[Error, List[Entity]] = {
-    def lookup(baseEntity: BaseEntity): Either[Error, Entity] = baseEntity.entityType match {
+  private def lookupEntities(
+      config: TableConfig,
+      allEntities: Set[Entity],
+  ): Either[Error, List[(Option[String], Entity)]] = {
+    def lookup(baseEntity: NamedBaseEntity): Either[Error, (Option[String], Entity)] = baseEntity.entityType match {
       case Case =>
         baseEntity.name.split('.').toList match {
           case List(enumName, caseName) =>
             allEntities
               .find(e => e.link.contains(enumName) && e.link.contains(caseName))
-              .toRight(EntityNotFound(baseEntity))
-          case _ => EntityNotFound(baseEntity).asLeft[Entity]
+              .map((baseEntity.wantedName, _))
+              .toRight(EntityNotFound(baseEntity.toBaseEntity))
+          case _ => EntityNotFound(baseEntity.toBaseEntity).asLeft[(Option[String], Entity)]
         }
       case _ =>
-        allEntities.find(_.toBaseEntity === baseEntity).toRight(EntityNotFound(baseEntity))
+        allEntities
+          .find(_.toBaseEntity === baseEntity.toBaseEntity)
+          .map((baseEntity.wantedName, _))
+          .toRight(EntityNotFound(baseEntity.toBaseEntity))
     }
     config.rows.traverseError(lookup)
   }

@@ -39,13 +39,18 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
 final case class BaseEntity(entityType: EntityType, name: String) {
   override def toString: String = s"$entityType: $name"
 }
+
+final case class NamedBaseEntity(entityType: EntityType, name: String, wantedName: Option[String]) {
+  def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
+}
+
 final case class Configuration(ignored: Set[BaseEntity], tables: List[TableConfig])
 
 final case class TableConfig(
     name: String,
     termName: Option[String],
     definitionName: Option[String],
-    rows: List[BaseEntity],
+    rows: List[NamedBaseEntity],
 )
 
 object BaseEntity {
