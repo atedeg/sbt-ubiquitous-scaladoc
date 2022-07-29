@@ -1,3 +1,10 @@
+# [1.0.0-beta.7](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.6...v1.0.0-beta.7) (2022-07-29)
+
+
+### Bug Fixes
+
+* add missing v in tag push ([0f967e5](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/0f967e5d3c55f9fc173b4bb80f3def9b25d80f0a))
+
 # [1.0.0-beta.6](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.5...v1.0.0-beta.6) (2022-07-29)
 
 
