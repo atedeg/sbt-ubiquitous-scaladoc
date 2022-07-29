@@ -1,3 +1,10 @@
+# [1.0.0-beta.5](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2022-07-29)
+
+
+### Bug Fixes
+
+* fix behaviour in case of leftover entities ([a00fead](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/a00feaddc3844c7f5c8e5e9a1976cea669cf8f4f))
+
 # [1.0.0-beta.4](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.3...v1.0.0-beta.4) (2022-07-26)
 
 
