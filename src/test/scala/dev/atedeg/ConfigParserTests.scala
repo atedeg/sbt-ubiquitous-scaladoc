@@ -53,15 +53,15 @@ class ConfigParserTests extends AnyFlatSpec with Matchers {
         |     - def: "def"
         |      """.stripMargin
 
-    val rows = List[BaseEntity](
-      BaseEntity(Class, "class"),
-      BaseEntity(Trait, "trait"),
-      BaseEntity(Enum, "enum"),
-      BaseEntity(Type, "type"),
-      BaseEntity(Case, "case"),
-      BaseEntity(Def, "def"),
+    val rows = List[NamedBaseEntity](
+      NamedBaseEntity(Class, "class", None),
+      NamedBaseEntity(Trait, "trait", None),
+      NamedBaseEntity(Enum, "enum", None),
+      NamedBaseEntity(Type, "type", None),
+      NamedBaseEntity(Case, "case", None),
+      NamedBaseEntity(Def, "def", None),
     )
-    val ignored = rows.toSet
+    val ignored = rows.map(_.toBaseEntity).toSet
 
     val expected = Configuration(
       ignored,
