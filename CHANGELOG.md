@@ -1,3 +1,10 @@
+# [1.0.0-beta.6](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.5...v1.0.0-beta.6) (2022-07-29)
+
+
+### Bug Fixes
+
+* clarify error codes when publishing ([207600c](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/207600cdc175d6d8284dc666e861eab98ea0228c))
+
 # [1.0.0-beta.5](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2022-07-29)
 
 
