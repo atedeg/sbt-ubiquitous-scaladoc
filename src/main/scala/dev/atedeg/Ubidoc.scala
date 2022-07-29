@@ -26,11 +26,15 @@ object Ubidoc {
         allEntities <- readAllEntities(lookupDir)
         tables <- config.tables.traverseError(toTable(_, allEntities))
         consideredEntities = tables.flatMap(_.rows).toSet
-        _ <- checkConsistency(allEntities.map(_.toBaseEntity), consideredEntities.map(_.toBaseEntity), config.ignored)
+        _ <- checkConsistency(
+          allEntities.map(_.toBaseEntity),
+          consideredEntities.map(_.toBaseEntity),
+          config.ignored,
+          logger,
+        )
         tables <- tables.traverseError(entitiesToRows(_, lookupDir, allEntities))
       } yield tables.foreach(serialize(_, targetDir))
       result match {
-        case Left(l @ LeftoverEntities(_)) => logger.warn(l.toString)
         case Left(err) => throw UbidocException(err)
         case Right(()) => logger.success("Tables generated")
       }
@@ -40,13 +44,16 @@ object Ubidoc {
         allEntities: Set[BaseEntity],
         considered: Set[BaseEntity],
         ignored: Set[BaseEntity],
+        logger: ManagedLogger,
     ): Either[Error, Unit] = {
       val consideredAndIgnored = considered.intersect(ignored)
       val leftovers = allEntities.diff(considered).diff(ignored)
       if (consideredAndIgnored.nonEmpty)
         OverlappingIgnoredAndConsidered(consideredAndIgnored).asLeft[Unit]
-      else if (leftovers.nonEmpty) LeftoverEntities(leftovers).asLeft[Unit]
-      else ().asRight[Error]
+      else if (leftovers.nonEmpty) {
+        logger.warn(LeftoverEntities(leftovers).toString)
+        ().asRight[Error]
+      } else ().asRight[Error]
     }
 
   }
