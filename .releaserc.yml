@@ -27,8 +27,8 @@ plugins:
     - publishCmd: |
         sbt +publishSigned || exit 1
         sbt sonatypeBundleRelease || exit 2
-        git tag -a -f ${nextRelease.version} ${nextRelease.version} -F CHANGELOG.md || exit 3
-        git push --force origin ${nextRelease.version} || exit 4
+        git tag -a -f v${nextRelease.version} v${nextRelease.version} -F CHANGELOG.md || exit 3
+        git push --force origin v${nextRelease.version} || exit 4
   - - '@semantic-release/git'
     - assets:
         - build.sbt
