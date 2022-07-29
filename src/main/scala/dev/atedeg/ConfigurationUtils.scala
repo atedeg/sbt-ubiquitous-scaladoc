@@ -45,9 +45,10 @@ object ConfigurationValidation {
     def lookup(baseEntity: BaseEntity): Either[Error, Entity] = baseEntity.entityType match {
       case Case =>
         baseEntity.name.split('.').toList match {
-          case List(enumName, caseName) => allEntities.find(e =>
-            e.link.contains(enumName) && e.link.contains(caseName)
-          ).toRight(EntityNotFound(baseEntity))
+          case List(enumName, caseName) =>
+            allEntities
+              .find(e => e.link.contains(enumName) && e.link.contains(caseName))
+              .toRight(EntityNotFound(baseEntity))
           case _ => EntityNotFound(baseEntity).asLeft[Entity]
         }
       case _ =>
