@@ -4,5 +4,6 @@ tables:
     definitionName: "Definition"
     rows:
       - class: "Example"
+        name: "Custom name"
 ignored:
   - class: "Example2"

@@ -28,7 +28,7 @@ object Ubidoc {
         consideredEntities = tables.flatMap(_.rows).toSet
         _ <- checkConsistency(
           allEntities.map(_.toBaseEntity),
-          consideredEntities.map(_.toBaseEntity),
+          consideredEntities.map(_._2.toBaseEntity),
           config.ignored,
           logger,
         )

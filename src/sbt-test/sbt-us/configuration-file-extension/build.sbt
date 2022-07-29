@@ -10,9 +10,11 @@ lazy val root = (project in file("."))
     Compile / doc / target := baseDirectory.value / "target/site",
     TaskKey[Unit]("checkContent") := {
       val file = Source.fromFile("customTarget/table1.md")
-      val table = "| Term    | Definition    || ------- | ------------- || Example | Example doc.  |"
-      val text = file.getLines.mkString
-      if(text != table) sys.error("Table generation error")
-      ()
+      file.getLines.toList match {
+        case List(_header, _line, line1)
+          if line1.contains("Custom name")
+          && line1.contains("Example doc.") => ()
+        case _ => sys.error("Table generation error")
+      }
     },
   )
