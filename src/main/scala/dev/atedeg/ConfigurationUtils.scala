@@ -40,9 +40,19 @@ object ConfigurationValidation {
     definitionName = tableConfig.definitionName.getOrElse("Definition")
   } yield Table(tableConfig.name, termName, definitionName, entities)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   private def lookupEntities(config: TableConfig, allEntities: Set[Entity]): Either[Error, List[Entity]] = {
-    def lookup(baseEntity: BaseEntity): Either[Error, Entity] =
-      allEntities.find(_.toBaseEntity === baseEntity).toRight(EntityNotFound(baseEntity))
+    def lookup(baseEntity: BaseEntity): Either[Error, Entity] = baseEntity.entityType match {
+      case Case =>
+        baseEntity.name.split('.').toList match {
+          case List(enumName, caseName) => allEntities.find(e =>
+            e.link.contains(enumName) && e.link.contains(caseName)
+          ).toRight(EntityNotFound(baseEntity))
+          case _ => EntityNotFound(baseEntity).asLeft[Entity]
+        }
+      case _ =>
+        allEntities.find(_.toBaseEntity === baseEntity).toRight(EntityNotFound(baseEntity))
+    }
     config.rows.traverseError(lookup)
   }
 }
