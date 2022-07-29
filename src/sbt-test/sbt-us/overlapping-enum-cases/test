@@ -1,0 +1,6 @@
+# check if the file is generated handling correctly overlapping enum cases
+> doc
+$ mkdir customTarget
+> ubidoc
+$ exists customTarget/table1.md
+> checkContent

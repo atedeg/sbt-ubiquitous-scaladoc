@@ -1,0 +1,8 @@
+tables:
+  - name: "table1"
+    termName: "Term"
+    definitionName: "Definition"
+    rows:
+      - case: "Enum1.Case1"
+      - case: "Enum2.Case1"
+ignored: []
