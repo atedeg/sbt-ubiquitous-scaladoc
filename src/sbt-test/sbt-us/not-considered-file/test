@@ -2,3 +2,5 @@
 > doc
 $ mkdir customTarget
 > ubidoc
+$ exists customTarget/table1.md
+> checkContent
