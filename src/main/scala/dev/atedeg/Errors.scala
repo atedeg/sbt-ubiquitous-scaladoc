@@ -36,6 +36,14 @@ final case class LeftoverEntities(leftovers: Set[BaseEntity]) extends Error {
     s"There are one or more entities that are not considered nor ignored, maybe you forgot about these:\n$pretty"
 }
 
+final case class WrongEnumCaseFormat(entity: BaseEntity) extends Error {
+
+  override def toString: String =
+    "When specifying an enum case you should prefix the case name with the " +
+      "enum's name like this: \"EnumName.CaseName\"\n" +
+      s"Instead i found ${entity.name}"
+}
+
 final case class ExternalError(error: Throwable) extends Error {
   override def toString: String = s"External error: $error"
 }

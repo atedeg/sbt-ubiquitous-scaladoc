@@ -58,7 +58,7 @@ object ConfigurationValidation {
               .find(e => e.link.contains(enumName) && e.link.contains(caseName))
               .map((baseEntity.wantedName, _))
               .toRight(EntityNotFound(baseEntity.toBaseEntity))
-          case _ => EntityNotFound(baseEntity.toBaseEntity).asLeft[(Option[String], Entity)]
+          case _ => WrongEnumCaseFormat(baseEntity.toBaseEntity).asLeft[(Option[String], Entity)]
         }
       case _ =>
         allEntities
