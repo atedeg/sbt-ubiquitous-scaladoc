@@ -58,6 +58,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup atedeg-bot
+        id: atedeg-bot
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.ATEDEG_BOT_APP_ID }}
+          private_key: ${{ secrets.ATEDEG_BOT_PRIVATE_KEY }}
+
       - run: echo $PGP_SECRET | base64 --decode | gpg --batch --import
         env:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
@@ -70,4 +77,4 @@ jobs:
           pgp-passphrase: ${{ secrets.PGP_PASSPHRASE }}
           sonatype-username: ${{ secrets.SONATYPE_USERNAME }}
           sonatype-password: ${{ secrets.SONATYPE_PASSWORD }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.atedeg-bot.outputs.token }}
