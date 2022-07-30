@@ -1,3 +1,53 @@
+# 1.0.0 (2022-07-30)
+
+
+### Bug Fixes
+
+* add .yaml extension to default configuration file ([b0d170f](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/b0d170f40468739a515ef56798866f455e287939))
+* add configuration for import sort in scalafix ([58c7edf](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/58c7edf4e979c13bf4d7c59cbcb1013010030d3f))
+* add missing v in tag push ([4145951](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/4145951d08899780fe7dbaa7d75a1a139e7e7730))
+* clarify error codes when publishing ([10550ec](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/10550eccd798a9bf9dd368e7d9161ef27102d86e))
+* create target directory if it does not exist when serializing a table ([3891302](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/38913021772a8114c2e44bfe13d315cd928d45cd))
+* fix behaviour in case of leftover entities ([7adcf85](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/7adcf85b5296bc41e39752f76540af9f37f31aa3))
+* fix bug in file lookup ([0cdddd3](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/0cdddd3136410c4938f348f0e41c9c5b41851650))
+* fix configuration parsing ([17d3fc2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/17d3fc214b708febd1a74785c7bd60735080cf3f))
+* fix error in case class lookup ([292ffbf](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/292ffbf484d1130892086b5b5fc9d80401d6735c))
+* fix error message typing ([a9e6cc2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/a9e6cc2c14e16c845eb54904eb787bd45f31e604))
+* fix json parsing of IgnoredSelectors ([f45898f](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/f45898f2af716cac34d0d2e5a52fef9ea7addb94))
+* fix resolution of selector ([e9562a6](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/e9562a63f9249993ec55be3207c877af29fde899))
+* fix table serialisation ([073cb9c](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/073cb9c2869c470b559cd37f1f33ceea636c1b24))
+* get branch name from git command ([095b579](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/095b5795ff34da01d28bd11720f36bfeb4d29731))
+* link generation ([9b88820](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/9b88820258faaf51321b4ac589bb9d155d56682c))
+* link in markdown table ([f7637a6](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/f7637a6fd1dfeff9db61fd6545b74e60ecb98684))
+* lookupdir instead of working dir in Ubidoc file ([630f0d6](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/630f0d60489908cfa7ba322cbe0e22319a846389))
+* only consider html files ([deccc79](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/deccc7944f497c9fe2602c3d588b3926baf356ea))
+* plugin parameters ([6087842](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/608784209794192433413b8add07e7bd02925601))
+* release script ([d54ce75](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/d54ce757d7b9557b44ad4b233c723cedcb44dc0e))
+* removed jitpack resolver for markdown generator library ([c83bc23](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/c83bc23f68d40f72f41fbfa9fa11e44b072c9a45))
+* scalafmt reformat ([c9d65eb](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/c9d65eba3321ec0bf1f32e56d130ee2d889a6708))
+* table serialization only applies to Tables with Rows and not entitites ([26426df](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/26426df1b59829723d364b6f5b4e9f86e7c22a2d))
+* wartremover errors ([ea41fb4](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/ea41fb4f8eff0a617cd07db91e157d6b6261ec8f))
+* wartremover silence errors ([5933729](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/5933729ba9a90558df83d5e44316e3d4e4a6e8a2))
+* world normalization ([c97bf44](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/c97bf447cbcf57f1b5178cb18fbf8e458afd8249))
+
+
+### Features
+
+* add entities parsing ([c9a3cb2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/c9a3cb27d28ab98d5b0d45b2fc19f753dab4fb90))
+* add Entity parsing ([1f34b59](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/1f34b59aa65e604f9fd9d61e442dedb8988bd7e9))
+* add fileNameSuffix key ([7e61b82](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/7e61b82c61ad62de17ed39bbc6126f4c6ee497e5))
+* add multiple table reading and ignored files ([1ee2d9a](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/1ee2d9a58b00b827bb577770abbdeb2a18c54c44))
+* add plugin keys ([124f512](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/124f5127b9c19442a5a6c7d605b38861dfc92a63))
+* allow custom names ([3c52d18](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/3c52d185ff499f9ebb3e6ce3360b48a912866aaf))
+* change configuration spec to avoid connflicts ([4903a2b](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/4903a2bec12cbd60305205b09aed30248a70768a))
+* configuration parsing ([ebebe22](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/ebebe222e9de5a432cb0acbbcb1348c256e79d12))
+* correctly resolve documentation links ([bf2fa1c](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/bf2fa1c009369e6d0b648146a05eb2fecabed8a7))
+* no longer fail when there are ignored entities ([b096fe9](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/b096fe9c3aaa862a40a4f79db8cbfca82037d777))
+* normalize row names ([7b26ac5](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/7b26ac526dd355cec5a97988633b03127a9aab91))
+* table generation from all entities file ([0e1af77](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/0e1af77bafdae822c03fabacd164e286ff08ba05))
+* ubiquitousScaladoc plugin implementation ([45a92fa](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/45a92fab3f5fb2e097caa7f106e3ff4ea2bc3c58))
+* use new selector kind ([3f2a137](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/3f2a137f33645db5be9451c7bf40ee9035b8ce65))
+
 # [1.0.0-beta.7](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0-beta.6...v1.0.0-beta.7) (2022-07-29)
 
 
