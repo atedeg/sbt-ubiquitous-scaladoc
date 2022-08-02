@@ -44,7 +44,7 @@ lazy val root = project
     semanticdbVersion := scalafixSemanticdb.revision,
     scalacOptions ++= Seq("-Ywarn-unused-import", "-Ypartial-unification"),
     libraryDependencies ++= Seq(
-      "net.ruippeixotog" %% "scala-scraper" % "2.2.1",
+      "net.ruippeixotog" %% "scala-scraper" % "3.0.0",
       "net.steppschuh.markdowngenerator" % "markdowngenerator" % "1.3.1.1",
       "com.github.pathikrit" %% "better-files" % "3.9.1",
       "io.circe" %% "circe-yaml" % "0.14.1",
