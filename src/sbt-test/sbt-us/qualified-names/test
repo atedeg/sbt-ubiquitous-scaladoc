@@ -1,0 +1,7 @@
+# should correctly interpret fully qualified names
+
+> doc
+$ mkdir customTarget
+> ubidoc
+$ exists customTarget/table1.md
+> checkContent
