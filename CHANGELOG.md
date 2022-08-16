@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.1...v1.0.2) (2022-08-16)
+
+
+### Bug Fixes
+
+* fix error in fully qualified name resolution ([77ef011](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/77ef0111fcce21265c9fd8dda140a4fcca308d2a))
+
 ## [1.0.1](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0...v1.0.1) (2022-08-16)
 
 
