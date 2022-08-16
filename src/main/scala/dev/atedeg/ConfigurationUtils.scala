@@ -60,6 +60,5 @@ object ConfigurationValidation {
       }
     }
     config.rows.traverseError(getEntity)
-    AmbiguousEntityName("asd", allEntities.toList).asLeft[List[(Option[String], Entity)]]
   }
 }
