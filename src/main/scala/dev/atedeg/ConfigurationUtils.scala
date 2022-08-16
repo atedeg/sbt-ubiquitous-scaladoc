@@ -45,27 +45,21 @@ object ConfigurationValidation {
       definitionName = tableConfig.definitionName.getOrElse("Definition")
     } yield Table(tableConfig.name, termName, definitionName, entities)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.NonUnitStatements"))
   private def lookupEntities(
       config: TableConfig,
       allEntities: Set[Entity],
   ): Either[Error, List[(Option[String], Entity)]] = {
-    def lookup(baseEntity: NamedBaseEntity): Either[Error, (Option[String], Entity)] = baseEntity.entityType match {
-      case Case =>
-        baseEntity.name.split('.').toList match {
-          case List(enumName, caseName) =>
-            allEntities
-              .find(e => e.link.contains(enumName) && e.link.contains(caseName))
-              .map((baseEntity.wantedName, _))
-              .toRight(EntityNotFound(baseEntity.toBaseEntity))
-          case _ => WrongEnumCaseFormat(baseEntity.toBaseEntity).asLeft[(Option[String], Entity)]
-        }
-      case _ =>
-        allEntities
-          .find(_.toBaseEntity === baseEntity.toBaseEntity)
-          .map((baseEntity.wantedName, _))
-          .toRight(EntityNotFound(baseEntity.toBaseEntity))
+    def matchSuffix(baseEntity: NamedBaseEntity)(entity: Entity): Boolean =
+      entity.fullyQualifiedName.endsWith(baseEntity.name)
+    def getEntity(baseEntity: NamedBaseEntity): Either[Error, (Option[String], Entity)] = {
+      allEntities.filter(matchSuffix(baseEntity)).toList match {
+        case Nil => EntityNotFound(baseEntity.toBaseEntity).asLeft[(Option[String], Entity)]
+        case List(e) => (baseEntity.wantedName, e).asRight[Error]
+        case l => AmbiguousEntityName(baseEntity.name, l).asLeft[(Option[String], Entity)]
+      }
     }
-    config.rows.traverseError(lookup)
+    config.rows.traverseError(getEntity)
+    AmbiguousEntityName("asd", allEntities.toList).asLeft[List[(Option[String], Entity)]]
   }
 }

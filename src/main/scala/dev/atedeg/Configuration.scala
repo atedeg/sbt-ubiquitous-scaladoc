@@ -34,6 +34,7 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
   def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
   def sanitizedLink: String = link.split('#').head
   def entityId: Option[String] = link.split('#').lift(1)
+  def fullyQualifiedName: String = packageName.replace("/", ".").replace("$$", ".")
 }
 
 final case class BaseEntity(entityType: EntityType, name: String) {
