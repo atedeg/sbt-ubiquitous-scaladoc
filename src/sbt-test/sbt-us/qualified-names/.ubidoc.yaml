@@ -1,0 +1,7 @@
+tables:
+  - name: "table1"
+    rows:
+      - class: "dev.atedeg.example1.Example"
+      - case: "Example.Case1"
+
+ignored: []
