@@ -37,7 +37,7 @@ lazy val root = project
   .enablePlugins(SbtPlugin)
   .settings(
     name := "sbt-ubiquitous-scaladoc",
-    version := "1.0.1",
+    version := "1.0.1-SNAPSHOT",
     sbtPlugin := true,
     scriptedBufferLog := false,
     semanticdbEnabled := true,

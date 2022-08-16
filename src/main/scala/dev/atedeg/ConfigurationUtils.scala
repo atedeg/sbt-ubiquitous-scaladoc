@@ -50,10 +50,11 @@ object ConfigurationValidation {
       config: TableConfig,
       allEntities: Set[Entity],
   ): Either[Error, List[(Option[String], Entity)]] = {
-    def matchSuffix(baseEntity: NamedBaseEntity)(entity: Entity): Boolean =
-      entity.fullyQualifiedName.endsWith(baseEntity.name)
+    def matching(baseEntity: NamedBaseEntity)(entity: Entity): Boolean =
+      entity.fullyQualifiedName.endsWith(baseEntity.name) &&
+        baseEntity.entityType === entity.entityType
     def getEntity(baseEntity: NamedBaseEntity): Either[Error, (Option[String], Entity)] = {
-      allEntities.filter(matchSuffix(baseEntity)).toList match {
+      allEntities.filter(matching(baseEntity)).toList match {
         case Nil => EntityNotFound(baseEntity.toBaseEntity).asLeft[(Option[String], Entity)]
         case List(e) => (baseEntity.wantedName, e).asRight[Error]
         case l => AmbiguousEntityName(baseEntity.name, l).asLeft[(Option[String], Entity)]

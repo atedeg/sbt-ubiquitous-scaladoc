@@ -34,7 +34,11 @@ final case class Entity(entityType: EntityType, link: String, name: String, pack
   def toBaseEntity: BaseEntity = BaseEntity(entityType, name)
   def sanitizedLink: String = link.split('#').head
   def entityId: Option[String] = link.split('#').lift(1)
-  def fullyQualifiedName: String = s"${packageName.replace("/", ".")}.${name}"
+
+  def fullyQualifiedName: String = {
+    val cleanedPackageName = packageName.replace("/", ".")
+    if (cleanedPackageName.endsWith(s".$name")) cleanedPackageName else s"$cleanedPackageName.$name"
+  }
 }
 
 final case class BaseEntity(entityType: EntityType, name: String) {
