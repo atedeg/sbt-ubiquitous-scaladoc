@@ -55,3 +55,7 @@ final case class CirceDecodingFailure(error: DecodingFailure) extends Error {
 final case class CirceParsingFailure(error: ParsingFailure) extends Error {
   override def toString: String = error.toString
 }
+
+final case class AmbiguousEntityName(name: String, allMatching: List[Entity]) extends Error {
+  override def toString: String = s"Use a fully qualified path, $name matches with more than one entity: $allMatching"
+}

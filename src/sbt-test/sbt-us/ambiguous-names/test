@@ -1,0 +1,4 @@
+# should fail since there are ambiguous names that could refer to two things
+> doc
+$ mkdir customTarget
+-> ubidoc

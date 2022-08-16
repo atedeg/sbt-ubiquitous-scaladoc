@@ -1,0 +1,6 @@
+tables:
+  - name: "table1"
+    rows:
+      - class: "Example"
+
+ignored: []
