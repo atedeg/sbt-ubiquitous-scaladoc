@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.0...v1.0.1) (2022-08-16)
+
+
+### Bug Fixes
+
+* change entities' name resolver ([2e45443](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/2e4544376e0ce29f4bfd8592314b31b557a038a4))
+* change fully qualified name extraction logic ([b65f8c3](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/b65f8c3eb2eab1a0a208da1ac259a57c06e85281))
+
 # 1.0.0 (2022-07-30)
 
 
