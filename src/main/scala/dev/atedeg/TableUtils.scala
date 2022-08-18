@@ -15,9 +15,10 @@ object TableUtils {
       table: Table[(Option[String], Entity)],
       baseDir: File,
       allEntities: Set[Entity],
+      linkSolver: String => String,
   ): Either[Error, Table[Row]] =
     table.rows
-      .traverseError(entityToRow(_, baseDir, allEntities))
+      .traverseError(entityToRow(_, baseDir, allEntities, linkSolver))
       .map(Table(table.title, table.termName, table.definitionName, _))
 
   def serialize(table: Table[Row], targetDir: File): Try[Unit] = {

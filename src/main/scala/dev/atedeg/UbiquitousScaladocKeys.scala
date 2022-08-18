@@ -12,4 +12,9 @@ trait UbiquitousScaladocKeys {
 
   val targetDirectory: SettingKey[File] =
     settingKey[File]("The target directory where to put the generated Markdown tables")
+
+  val linkSolver: SettingKey[String => String] =
+    settingKey[String => String](
+      "A function to adapt the base link in case it needs to be changed to accomodate the site structure",
+    )
 }
