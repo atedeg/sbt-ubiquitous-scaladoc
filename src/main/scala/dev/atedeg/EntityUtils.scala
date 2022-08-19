@@ -1,5 +1,7 @@
 package dev.atedeg
 
+import java.util.Locale.US
+
 import dev.atedeg.HtmlParsing.extractTermAndDefinition
 
 import better.files.File
@@ -32,6 +34,9 @@ object EntityParsing {
 
 object EntityConversion {
 
+  private def normalizeName(name: String): String =
+    name.split("(?=\\p{Upper})").toList.map(_.toLowerCase(US)).mkString(" ").capitalize
+
   def entityToRow(
       namedEntity: (Option[String], Entity),
       baseDir: File,
@@ -39,6 +44,6 @@ object EntityConversion {
       linkSolver: String => String,
   ): Either[Error, Row] =
     extractTermAndDefinition(baseDir / namedEntity._2.sanitizedLink, namedEntity._2, allEntities, linkSolver).map {
-      case (term, definition) => Row.from(namedEntity._1.getOrElse(term), definition)
+      case (term, definition) => Row(namedEntity._1.getOrElse(normalizeName(term)), definition)
     }
 }
