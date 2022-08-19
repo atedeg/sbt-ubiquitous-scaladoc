@@ -8,7 +8,15 @@
 
 # User-specific stuff
 .idea/
+.bloop/
 .bsp/
+
+# metals
+project/metals.sbt
+.metals
+
+# vs code
+.vscode
 
 # CMake
 cmake-build-*/
@@ -64,6 +72,7 @@ lib_managed/
 src_managed/
 project/boot/
 project/plugins/project/
+project/project/
 .history
 .cache
 .lib/
