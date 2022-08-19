@@ -12,11 +12,11 @@ plugins:
   - - '@semantic-release/release-notes-generator'
     - preset: conventionalcommits
   - '@semantic-release/changelog'
-  - - '@semantic-release/exec'
-    - publishCmd: |
-        export CI_COMMIT_TAG="true"
-        sbt ci-release
   - - '@semantic-release/git'
     - assets:
         - CHANGELOG.md
+  - - '@semantic-release/exec'
+    - publishCmd: |
+        export CI_COMMIT_TAG="true"
+        sbt 'set ThisBuild / version := "${nextRelease.version}"' ci-release
   - '@semantic-release/github'
