@@ -39,6 +39,8 @@ lazy val startupTransition: State => State = { s: State =>
   "conventionalCommits" :: s
 }
 
+addCommandAlias("testPlugin", "set ThisBuild / version := \"0.0.0-SNAPSHOT\"; scripted")
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(SbtPlugin)
