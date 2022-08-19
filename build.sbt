@@ -5,6 +5,7 @@ ThisBuild / scalafixDependencies ++= Seq(
 ThisBuild / homepage := Some(url("https://github.com/atedeg/sbt-ubiquitous-scaladoc"))
 ThisBuild / organization := "dev.atedeg"
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Throw, Wart.Recursion)
 
 ThisBuild / developers := List(
@@ -19,6 +20,12 @@ ThisBuild / developers := List(
     "Nicolò Di Domenico",
     "ndido98@gmail.com",
     url("https://github.com/ndido98"),
+  ),
+  Developer(
+    "nicolasfara",
+    "Nicolas Farabegoli",
+    "nicolas.farabegoli@gmail.com",
+    url("https://github.com/nicolasfarabegoli"),
   ),
   Developer(
     "vitlinda",
@@ -37,12 +44,14 @@ lazy val root = project
   .enablePlugins(SbtPlugin)
   .settings(
     name := "sbt-ubiquitous-scaladoc",
-    version := "1.0.3-SNAPSHOT",
     sbtPlugin := true,
     scriptedBufferLog := false,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     scalacOptions ++= Seq("-Ywarn-unused-import", "-Ypartial-unification"),
+    scriptedLaunchOpts := { scriptedLaunchOpts.value ++
+      Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    },
     libraryDependencies ++= Seq(
       "net.ruippeixotog" %% "scala-scraper" % "3.0.0",
       "net.steppschuh.markdowngenerator" % "markdowngenerator" % "1.3.1.1",
