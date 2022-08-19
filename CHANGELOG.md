@@ -1,3 +1,14 @@
+## [2.0.0](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.2...v2.0.0) (2022-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* add plugin key to adapt links before they are added to the table
+
+### Features
+
+* add plugin key to adapt links before they are added to the table ([ca67451](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/ca67451cfee232dd638846e8fdbca573dab2cea1))
+
 ## [1.0.2](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.1...v1.0.2) (2022-08-16)
 
 
