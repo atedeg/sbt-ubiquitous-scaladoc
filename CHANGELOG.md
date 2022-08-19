@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v2.0.0...v2.0.1) (2022-08-19)
+
+
+### Bug Fixes
+
+* only normalize names that are not explicitly provided ([ff04551](https://github.com/atedeg/sbt-ubiquitous-scaladoc/commit/ff04551066225302b9245d82417728f0a15d9fb9))
+
 ## [2.0.0](https://github.com/atedeg/sbt-ubiquitous-scaladoc/compare/v1.0.2...v2.0.0) (2022-08-19)
 
 
