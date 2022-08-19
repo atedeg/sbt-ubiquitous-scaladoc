@@ -45,7 +45,7 @@ jobs:
         run: sbt wartremoverInspect
 
       - name: Plugin test
-        run: sbt 'set ThisBuild / version := "0.0.0-SNAPSHOT"' scripted
+        run: sbt testPlugin
 
   publish:
     name: Publish
