@@ -60,7 +60,7 @@ lazy val root = project
       "com.github.pathikrit" %% "better-files" % "3.9.1",
       "io.circe" %% "circe-yaml" % "0.14.1",
       "io.circe" %% "circe-core" % "0.14.3",
-      "io.circe" %% "circe-generic" % "0.14.2",
+      "io.circe" %% "circe-generic" % "0.14.3",
       "io.circe" %% "circe-parser" % "0.14.2",
       "org.typelevel" %% "cats-core" % "2.8.0",
       "org.scalatest" %% "scalatest" % "3.2.13" % "test",
