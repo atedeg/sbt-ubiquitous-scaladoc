@@ -63,7 +63,7 @@ lazy val root = project
       "io.circe" %% "circe-generic" % "0.14.3",
       "io.circe" %% "circe-parser" % "0.14.3",
       "org.typelevel" %% "cats-core" % "2.9.0",
-      "org.scalatest" %% "scalatest" % "3.2.14" % "test",
+      "org.scalatest" %% "scalatest" % "3.2.15" % "test",
     ),
     publishTo := sonatypePublishToBundle.value,
     sonatypeCredentialHost := "s01.oss.sonatype.org",
