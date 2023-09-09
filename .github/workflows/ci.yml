@@ -55,7 +55,7 @@ jobs:
     steps:
       - name: Setup atedeg-bot
         id: atedeg-bot
-        uses: tibdex/github-app-token@v1
+        uses: tibdex/github-app-token@v2
         with:
           app_id: ${{ secrets.ATEDEG_BOT_APP_ID }}
           private_key: ${{ secrets.ATEDEG_BOT_PRIVATE_KEY }}
