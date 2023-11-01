@@ -58,7 +58,7 @@ lazy val root = project
       "net.ruippeixotog" %% "scala-scraper" % "3.1.0",
       "net.steppschuh.markdowngenerator" % "markdowngenerator" % "1.3.1.1",
       "com.github.pathikrit" %% "better-files" % "3.9.2",
-      "io.circe" %% "circe-yaml" % "0.14.2",
+      "io.circe" %% "circe-yaml" % "1.15.0",
       "io.circe" %% "circe-core" % "0.14.6",
       "io.circe" %% "circe-generic" % "0.14.6",
       "io.circe" %% "circe-parser" % "0.14.6",
