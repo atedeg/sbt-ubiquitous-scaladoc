@@ -55,7 +55,7 @@ lazy val root = project
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
     libraryDependencies ++= Seq(
-      "net.ruippeixotog" %% "scala-scraper" % "3.1.0",
+      "net.ruippeixotog" %% "scala-scraper" % "3.1.1",
       "net.steppschuh.markdowngenerator" % "markdowngenerator" % "1.3.1.1",
       "com.github.pathikrit" %% "better-files" % "3.9.2",
       "io.circe" %% "circe-yaml" % "1.15.0",
