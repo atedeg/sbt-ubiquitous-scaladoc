@@ -61,7 +61,7 @@ lazy val root = project
       "io.circe" %% "circe-yaml" % "1.15.0",
       "io.circe" %% "circe-core" % "0.14.6",
       "io.circe" %% "circe-generic" % "0.14.6",
-      "io.circe" %% "circe-parser" % "0.14.6",
+      "io.circe" %% "circe-parser" % "0.14.10",
       "org.typelevel" %% "cats-core" % "2.10.0",
       "org.scalatest" %% "scalatest" % "3.2.18" % "test",
     ),
