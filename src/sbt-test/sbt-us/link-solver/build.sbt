@@ -4,7 +4,7 @@ ThisBuild / ubidoc / targetDirectory := baseDirectory.value / "customTarget"
 ThisBuild / ubidoc / lookupDirectory := target.value / "site"
 ThisBuild / ubidoc / linkSolver := ((_: String) => "fixed-link")
 
-scalaVersion := "3.2.2"
+scalaVersion := "3.6.1"
 
 lazy val root = (project in file("."))
   .settings(
